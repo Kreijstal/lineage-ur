@@ -1,0 +1,9 @@
+{
+  "pkg_format": "debian",
+  "lineage": {
+    "name": "lineage-ur",
+    "distribution": "lineage-23.2",
+    "component": "main",
+    "url": "https://kreijstal.github.io/lineage-ur"
+  }
+}

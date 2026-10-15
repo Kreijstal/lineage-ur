@@ -1,0 +1,11 @@
+/artifacts/
+/builder/
+/output/
+/site/
+__pycache__/
+*.py[cod]
+*.deb
+*.pkg.tar.*
+*.so
+*.a
+*.jar

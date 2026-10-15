@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "component": "REPLACE_WITH_COMPONENT_NAME",
+  "status": "planned",
+  "role": "REPLACE_WITH_host_tool_OR_android_library",
+  "lineage": {
+    "branch": "lineage-23.2",
+    "repository": "REPLACE_WITH_SOURCE_REPOSITORY_URL",
+    "revision": "REPLACE_WITH_FULL_COMMIT_HASH",
+    "path": "REPLACE_WITH_CHECKOUT_PATH"
+  },
+  "upstream": {
+    "repository": null,
+    "revision": null
+  },
+  "build_inputs": {
+    "manifest_sha256": null,
+    "toolchain": null,
+    "configuration_sha256": null,
+    "variants": [],
+    "dependencies": []
+  },
+  "integration": {
+    "strategy": null,
+    "source_fallback": true
+  },
+  "patches": [],
+  "licenses": [],
+  "artifacts": [],
+  "validation": []
+}
