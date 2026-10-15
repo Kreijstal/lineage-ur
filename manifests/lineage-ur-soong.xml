@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="lineage-ur-soong-github" fetch="https://github.com/" />
+  <remove-project name="LineageOS/android_build_soong"
+                  path="build/soong"
+                  base-rev="9aa045a2aef10b8089e32e847fed26d9aa3d61be" />
+  <project name="Kreijstal/android_build_soong"
+           path="build/soong"
+           remote="lineage-ur-soong-github"
+           revision="lineage-ur-23.2"
+           groups="pdk,tradefed,sysui-studio" />
+</manifest>

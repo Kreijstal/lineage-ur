@@ -3,6 +3,35 @@
 This is an integration layer for LineageOS, with the source build retained as the
 reference. It is not an independent replacement for Soong.
 
+## Soong fork
+
+The companion fork is
+[Kreijstal/android_build_soong](https://github.com/Kreijstal/android_build_soong),
+branch `lineage-ur-23.2`, based on upstream `lineage-23.2` commit
+`9aa045a2aef10b8089e32e847fed26d9aa3d61be`. The branch currently contains no
+downstream code changes. `soong.json` records this baseline and feature status.
+
+Use the fork for generic opt-in integration that existing module declarations
+cannot express cleanly. Keep normal upstream source builds as the default.
+System-tool selection must use explicit compatibility policies, resolved paths
+and tool identity rather than a distro name or executable presence alone.
+
+The optional `manifests/lineage-ur-soong.xml` removes the upstream project and
+adds the fork at the same `build/soong` path. Changing only a remote with
+`extend-project` would retain the upstream project name in the repository URL;
+the replacement must select `Kreijstal/android_build_soong` explicitly.
+
+For each upstream update:
+
+1. Fetch the new upstream `lineage-23.2` revision in the fork checkout.
+2. Rebase the small downstream patch stack and inspect the resulting diff.
+3. Run focused Soong tests and the relevant source/prebuilt build comparisons.
+4. Update the recorded base and optional manifest together after validation.
+
+The manifest's `base-rev` guard stops selection if the checkout's upstream
+manifest has moved beyond the reviewed baseline. Do not add or sync this
+override in a checkout with an active build.
+
 ## Two dependency roles
 
 Host tools execute on the build PC. Compatible distro packages may supply them;

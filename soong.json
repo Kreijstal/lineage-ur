@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "upstream": {
+    "repository": "https://github.com/LineageOS/android_build_soong",
+    "branch": "lineage-23.2",
+    "revision": "9aa045a2aef10b8089e32e847fed26d9aa3d61be"
+  },
+  "fork": {
+    "repository": "https://github.com/Kreijstal/android_build_soong",
+    "branch": "lineage-ur-23.2",
+    "base_revision": "9aa045a2aef10b8089e32e847fed26d9aa3d61be",
+    "status": "unmodified_baseline"
+  },
+  "integration_manifest": "manifests/lineage-ur-soong.xml",
+  "features": {
+    "system_tool_selection": "planned",
+    "packaged_dependency_selection": "planned"
+  }
+}

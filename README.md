@@ -21,6 +21,7 @@ validated component; no build-time speedup is claimed yet.
 | `manifests/` | Optional `repo` local manifest for adding this layer. |
 | `templates/` | Component metadata and integration examples. |
 | `repo.json` | Proposed Termux-style recipe collection and binary repository mapping. |
+| `soong.json` | Soong upstream revision, fork branch and feature status. |
 | `docs/design.md` | Package boundaries, compatibility and upstream maintenance policy. |
 
 Run `make check` for local validation. Python 3 and Git are sufficient. CI runs
@@ -51,6 +52,19 @@ The URLs in `repo.json` describe the intended publication layout. They are not
 an active package source and should not be added to APT yet. A separate build
 adapter is required: stock Termux packages and their application-specific paths
 are not automatically interchangeable with Android platform dependencies.
+
+## Soong fork
+
+[Kreijstal/android_build_soong](https://github.com/Kreijstal/android_build_soong/tree/lineage-ur-23.2)
+tracks LineageOS's Soong on `lineage-ur-23.2`. It currently starts from the same
+unmodified commit as the reference build. System-tool selection and package
+integration remain planned; upstream behavior remains the baseline.
+
+For a separate experimental checkout, the optional
+`manifests/lineage-ur-soong.xml` replaces only the `build/soong` project. It is
+separate from the manifest that adds the recipe repository. Its `base-rev` guard
+requires reconciling upstream changes before switching the checkout. See
+[the design notes](docs/design.md#soong-fork) for the update procedure.
 
 ## Contributing
 
