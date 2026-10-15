@@ -8,9 +8,9 @@ The goal is to reuse compatible packaged dependencies and system tools while
 keeping a small, reviewable difference from upstream LineageOS. Initial target:
 `lineage-23.2`, Android 16, Samsung Galaxy S20 FE `SM-G780G` / `r8q`.
 
-**Status:** repository scaffold. No dependency substitutions, binary packages or
-APT repository have been published. The first milestone is one independently
-validated component; no build-time speedup is claimed yet.
+**Status:** experimental system host-tool selection is implemented and opt-in.
+No binary packages or APT repository have been published, and no ROM build-time
+speedup is claimed yet. See [system-tool setup and limits](docs/system-tools.md).
 
 ## Repository layout
 
@@ -24,8 +24,9 @@ validated component; no build-time speedup is claimed yet.
 | `soong.json` | Soong upstream revision, fork branch and feature status. |
 | `docs/design.md` | Package boundaries, compatibility and upstream maintenance policy. |
 
-Run `make check` for local validation. Python 3 and Git are sufficient. CI runs
-the same check; it does not compile Android or publish packages.
+Run `make check` for local validation on Linux x86-64/glibc with Python 3.9+, Git
+and standard `echo`/`sleep` executables. CI runs
+the same metadata and helper tests; it does not compile Android or publish packages.
 
 ## How it will work
 
@@ -56,9 +57,11 @@ are not automatically interchangeable with Android platform dependencies.
 ## Soong fork
 
 [Kreijstal/android_build_soong](https://github.com/Kreijstal/android_build_soong/tree/lineage-ur-23.2)
-tracks LineageOS's Soong on `lineage-ur-23.2`. It currently starts from the same
-unmodified commit as the reference build. System-tool selection and package
-integration remain planned; upstream behavior remains the baseline.
+tracks LineageOS's Soong on `lineage-ur-23.2`. It adds an opt-in
+`system_build_tool` adapter with normal source fallback. The compatibility
+selector and usage are documented in [system tools](docs/system-tools.md).
+Target dependency package integration remains planned; default source builds
+retain upstream behavior.
 
 For a separate experimental checkout, the optional
 `manifests/lineage-ur-soong.xml` replaces only the `build/soong` project. It is
