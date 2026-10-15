@@ -14,6 +14,8 @@ def main():
     parser.add_argument("--soong-root", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, default=Path("artifacts/soong-tests"))
     parser.add_argument("--lz4-snapshot", type=Path, help="also check a prepared LZ4 package Android.bp")
+    parser.add_argument("--system-tools-snapshot", type=Path, help="also check the generated system-lz4 Android.bp")
+    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPrebuilt.*)$", help="focused Go test name pattern")
     args = parser.parse_args()
     source = args.source_root.resolve()
     soong = args.soong_root.resolve()
@@ -38,8 +40,12 @@ def main():
         env["LINEAGE_UR_LZ4_TEST_SNAPSHOT"] = str(args.lz4_snapshot.resolve())
     else:
         env.pop("LINEAGE_UR_LZ4_TEST_SNAPSHOT", None)
+    if args.system_tools_snapshot:
+        env["LINEAGE_UR_SYSTEM_TOOLS_TEST_SNAPSHOT"] = str(args.system_tools_snapshot.resolve())
+    else:
+        env.pop("LINEAGE_UR_SYSTEM_TOOLS_TEST_SNAPSHOT", None)
     subprocess.run([str(go), "test", "-p", "2", "./android", "./genrule", "./cc",
-                    "-run", "^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPrebuilt.*)$", "-count=1"],
+                    "-run", args.run, "-count=1"],
                    cwd=soong, env=env, check=True)
 
 

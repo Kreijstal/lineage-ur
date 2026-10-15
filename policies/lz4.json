@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "host": "linux_glibc_x86_64",
+  "tools": [
+    {
+      "module": "lz4",
+      "executable": "lz4",
+      "licenses": [
+        "external_lz4_programs_license"
+      ],
+      "compatibility": "android-lz4",
+      "probes": [
+        {
+          "args": [
+            "--version"
+          ],
+          "output_regex": "(?i)\\blz4\\b[^\\r\\n]*\\bv1\\.[0-9]+\\.[0-9]+\\b"
+        }
+      ]
+    }
+  ]
+}

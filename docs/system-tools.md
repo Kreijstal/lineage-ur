@@ -14,6 +14,10 @@ failed probes, timeouts, optional hash mismatches, and deleted snapshots all
 leave the matching source module selected. Malformed policy is an error.
 There is no implicit search for arbitrary replacements.
 
+The ready-to-test [system LZ4 policy](../lineage/lz4-system/README.md) checks real
+Android compression commands and formats. It uses the installed executable;
+no `liblz4` package build is required to select the CLI.
+
 ## Experimental setup
 
 Use a **separate, idle Android checkout**. First select the Soong fork with
@@ -51,6 +55,9 @@ For each tool policy specify:
   in an empty temporary working directory, with a five-second timeout per probe
   by default. They execute trusted local binaries and are not a security sandbox.
 - `sha256` (optional): require an exact, previously reviewed executable hash.
+- `compatibility` (optional): `android-lz4` adds functional compression-format,
+  roundtrip and corruption checks after the version/feature probes. Unknown
+  profiles are configuration errors.
 
 The helper accepts native x86-64 ELF executables only. Probe checks are necessary
 but do not prove complete behavioral compatibility. Use component-specific

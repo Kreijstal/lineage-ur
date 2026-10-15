@@ -31,12 +31,14 @@ def load_policy(path):
         raise ValueError("tools must be a list")
     names = set()
     for tool in policy["tools"]:
-        if not isinstance(tool, dict) or set(tool) - {"module", "executable", "probes", "sha256", "licenses"}:
+        if not isinstance(tool, dict) or set(tool) - {"module", "executable", "probes", "sha256", "licenses", "compatibility"}:
             raise ValueError("unknown tool policy field")
         name = tool.get("module", "")
         if not isinstance(name, str) or not NAME.fullmatch(name) or name in names:
             raise ValueError(f"invalid or duplicate module: {name!r}")
         names.add(name)
+        if "compatibility" in tool and tool["compatibility"] != "android-lz4":
+            raise ValueError(f"{name}: unknown compatibility profile")
         licenses = tool.get("licenses")
         if not isinstance(licenses, list) or not licenses or not all(isinstance(v, str) and v for v in licenses):
             raise ValueError(f"{name}: applicable Soong licenses must be explicit")
@@ -109,7 +111,17 @@ def select(tool, snapshots, timeout):
             results.append({"args": probe["args"], "returncode": result.returncode, "output": output})
             if result.returncode != 0 or not re.search(probe["output_regex"], output):
                 return record | {"reason": "compatibility probe failed", "probes": results}
-        return record | {"decision": "system", "sha256": digest, "src": "snapshots/" + snapshot.name, "probes": results}
+        compatibility = {}
+        if tool.get("compatibility") == "android-lz4":
+            if __package__:
+                from .lz4_compat import check, Lz4CompatibilityError
+            else:
+                from lz4_compat import check, Lz4CompatibilityError
+            try:
+                compatibility = {"compatibility": check(snapshot, timeout)}
+            except Lz4CompatibilityError as error:
+                return record | {"reason": f"android-lz4 compatibility failed: {error}", "probes": results}
+        return record | {"decision": "system", "sha256": digest, "src": "snapshots/" + snapshot.name, "probes": results} | compatibility
     except subprocess.TimeoutExpired:
         return record | {"reason": "compatibility probe timed out"}
     except OSError as error:

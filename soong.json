@@ -10,12 +10,13 @@
     "branch": "lineage-ur-23.2",
     "base_revision": "9aa045a2aef10b8089e32e847fed26d9aa3d61be",
     "status": "experimental_host_reuse",
-    "revision": "b893a39d56233ce537afb13a5284da008bff2f19"
+    "revision": "49f1987a3c88a601a8b7c6d79aa552998428ca32"
   },
   "integration_manifest": "manifests/lineage-ur-soong.xml",
   "features": {
     "system_tool_selection": "experimental",
     "packaged_dependency_selection": "planned",
-    "packaged_host_library_selection": "experimental"
+    "packaged_host_library_selection": "experimental",
+    "system_lz4_selection": "experimental_functionally_checked"
   }
 }

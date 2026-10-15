@@ -84,6 +84,7 @@ class SelectionTest(unittest.TestCase):
             lambda c: c["tools"][0].update(probes=[]),
             lambda c: c["tools"][0].update(licenses=[]),
             lambda c: c["tools"][0].update(typo=True),
+            lambda c: c["tools"][0].update(compatibility="unknown-profile"),
         ]:
             self.config = copy.deepcopy(baseline)
             mutate(self.config)

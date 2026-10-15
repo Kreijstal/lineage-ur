@@ -8,4 +8,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install LZ4 for functional compatibility checks
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lz4
       - run: make check

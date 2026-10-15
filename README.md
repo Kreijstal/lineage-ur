@@ -13,6 +13,9 @@ and opt-in. No binary packages or APT repository have been published, and no ROM
 speedup is claimed yet. See [system tools](docs/system-tools.md) and
 [host libraries](docs/host-libraries.md).
 
+[System LZ4](lineage/lz4-system/README.md) is the first CLI policy with functional
+Android format checks and a comparison against the pinned source implementation.
+
 ## Repository layout
 
 | Path | Purpose |
@@ -27,6 +30,7 @@ speedup is claimed yet. See [system tools](docs/system-tools.md) and
 
 Run `make check` for local validation on Linux x86-64/glibc with Python 3.9+, Git
 and standard `echo`/`sleep` executables, plus native `cc`, `ar` and `readelf`.
+Install `lz4` to include its functional compatibility tests (CI installs it).
 CI runs the same metadata and package consumer tests; it does not compile Android
 or publish packages.
 
