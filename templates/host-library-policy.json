@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "host": "linux_glibc_x86_64",
+  "libraries": [
+    {
+      "module": "libexample",
+      "manifest": "/path/to/reviewed/package/package.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "licenses": ["REPLACE_WITH_VISIBLE_APPLICABLE_LICENSE"]
+    }
+  ]
+}

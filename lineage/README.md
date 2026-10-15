@@ -1,7 +1,8 @@
 # Component recipes
 
 Add one directory per component, containing its recipe, component metadata,
-patches and validation notes. There are no active recipes yet.
+patches and validation notes. `liblz4/` contains an experimental native host
+recipe and a static/shared consumer check; no recipes are automatically enabled.
 
 Start from the existing LineageOS implementation. Record its repository and
 commit, exact inputs, required variants and dependencies before attempting an

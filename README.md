@@ -8,9 +8,10 @@ The goal is to reuse compatible packaged dependencies and system tools while
 keeping a small, reviewable difference from upstream LineageOS. Initial target:
 `lineage-23.2`, Android 16, Samsung Galaxy S20 FE `SM-G780G` / `r8q`.
 
-**Status:** experimental system host-tool selection is implemented and opt-in.
-No binary packages or APT repository have been published, and no ROM build-time
-speedup is claimed yet. See [system-tool setup and limits](docs/system-tools.md).
+**Status:** experimental host-tool and packaged C library reuse are implemented
+and opt-in. No binary packages or APT repository have been published, and no ROM build-time
+speedup is claimed yet. See [system tools](docs/system-tools.md) and
+[host libraries](docs/host-libraries.md).
 
 ## Repository layout
 
@@ -25,8 +26,9 @@ speedup is claimed yet. See [system-tool setup and limits](docs/system-tools.md)
 | `docs/design.md` | Package boundaries, compatibility and upstream maintenance policy. |
 
 Run `make check` for local validation on Linux x86-64/glibc with Python 3.9+, Git
-and standard `echo`/`sleep` executables. CI runs
-the same metadata and helper tests; it does not compile Android or publish packages.
+and standard `echo`/`sleep` executables, plus native `cc`, `ar` and `readelf`.
+CI runs the same metadata and package consumer tests; it does not compile Android
+or publish packages.
 
 ## How it will work
 
@@ -57,9 +59,11 @@ are not automatically interchangeable with Android platform dependencies.
 ## Soong fork
 
 [Kreijstal/android_build_soong](https://github.com/Kreijstal/android_build_soong/tree/lineage-ur-23.2)
-tracks LineageOS's Soong on `lineage-ur-23.2`. It adds an opt-in
-`system_build_tool` adapter with normal source fallback. The compatibility
-selector and usage are documented in [system tools](docs/system-tools.md).
+tracks LineageOS's Soong on `lineage-ur-23.2`. It adds opt-in
+`system_build_tool` and `cc_packaged_library_host` adapters with source fallback.
+The compatibility
+selectors are documented in [system tools](docs/system-tools.md) and
+[host libraries](docs/host-libraries.md).
 Target dependency package integration remains planned; default source builds
 retain upstream behavior.
 

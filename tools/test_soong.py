@@ -13,6 +13,7 @@ def main():
     parser.add_argument("--source-root", type=Path, required=True)
     parser.add_argument("--soong-root", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, default=Path("artifacts/soong-tests"))
+    parser.add_argument("--lz4-snapshot", type=Path, help="also check a prepared LZ4 package Android.bp")
     args = parser.parse_args()
     source = args.source_root.resolve()
     soong = args.soong_root.resolve()
@@ -31,10 +32,14 @@ def main():
     work = out / "go.work"
     work.write_text(workspace)
     env = os.environ | {"GOWORK": str(work), "GOCACHE": str(out / "cache"),
-                        "GOPROXY": "off", "GOTOOLCHAIN": "local", "GOENV": "off"}
+                        "GOPROXY": "off", "GOTOOLCHAIN": "local", "GOENV": "off", "GOMAXPROCS": "2"}
     env.pop("ANDROID_BUILD_TOP", None)
+    if args.lz4_snapshot:
+        env["LINEAGE_UR_LZ4_TEST_SNAPSHOT"] = str(args.lz4_snapshot.resolve())
+    else:
+        env.pop("LINEAGE_UR_LZ4_TEST_SNAPSHOT", None)
     subprocess.run([str(go), "test", "-p", "2", "./android", "./genrule", "./cc",
-                    "-run", "^(TestSystemBuildTool.*|TestPrebuiltTool|TestPrebuilts)$", "-count=1"],
+                    "-run", "^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPrebuilt.*)$", "-count=1"],
                    cwd=soong, env=env, check=True)
 
 

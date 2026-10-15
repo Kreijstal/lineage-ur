@@ -9,8 +9,9 @@ The companion fork is
 [Kreijstal/android_build_soong](https://github.com/Kreijstal/android_build_soong),
 branch `lineage-ur-23.2`, based on upstream `lineage-23.2` commit
 `9aa045a2aef10b8089e32e847fed26d9aa3d61be`. The small downstream patch adds opt-in
-`system_build_tool` selection. `soong.json` records this baseline and feature
-status; [system tools](system-tools.md) describes configuration and limitations.
+`system_build_tool` and `cc_packaged_library_host` selection. `soong.json` records this baseline and feature
+status; [system tools](system-tools.md) and [host libraries](host-libraries.md)
+describe configuration and limitations.
 
 Use the fork for generic opt-in integration that existing module declarations
 cannot express cleanly. Keep normal upstream source builds as the default.
@@ -78,8 +79,7 @@ Releases, and signed APT metadata describing downloadable artifacts. Index
 hosting and any redirector must agree with the package URLs in that metadata.
 
 `repo.json` reserves the `lineage/` recipe collection and the planned binary
-repository URL. Publication is not configured. CI checks metadata and the host selector
-helper; it neither builds Android nor uploads packages or deploys a Pages site.
+repository URL. Publication is not configured. CI checks metadata and host selectors, including small compiled C consumers; it neither builds Android nor uploads packages or deploys a Pages site.
 
 The reference mechanisms are:
 

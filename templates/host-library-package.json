@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "module": "libexample",
+  "host": "linux_glibc_x86_64",
+  "source_revision": "REPLACE_WITH_REVIEWED_SOURCE_REVISION",
+  "toolchain": "REPLACE_WITH_COMPILER_IDENTITY_AND_HASH",
+  "configuration": "REPLACE_WITH_BUILD_FLAGS_AND_CONFIGURATION_HASH",
+  "static": "lib/libexample.a",
+  "shared": "lib/libexample.so",
+  "include_dirs": ["include"],
+  "files": {
+    "lib/libexample.a": "0000000000000000000000000000000000000000000000000000000000000000",
+    "lib/libexample.so": "0000000000000000000000000000000000000000000000000000000000000000",
+    "include/example.h": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "dependencies": {}
+}
