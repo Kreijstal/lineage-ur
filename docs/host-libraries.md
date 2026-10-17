@@ -23,8 +23,11 @@ if the package provides only one linkage variant.
 The preparer checks every inventoried file, native object architecture and
 shared-library SONAME. Static archives must contain regular x86-64 ELF objects;
 thin archives and LLVM bitcode are rejected. Shared artifacts must be named
-`<module>.so` with that same SONAME. Libraries using versioned SONAMEs, custom
-stems or special runtime layouts require a dedicated adapter. The preparer uses
+`<module>.so` with that same SONAME. Packages may set the boolean
+`unique_host_soname: true` to preserve Android's `<module>-host.so` naming
+instead (without appending `-host` twice). The generated Soong adapter uses
+the same property; binaries and SONAMEs are never rewritten. Libraries using
+versioned SONAMEs, other custom stems or special runtime layouts require a dedicated adapter. The preparer uses
 `readelf` for shared-library inspection (`--readelf` can select an explicit tool).
 
 Dependencies are pinned inside the parent package, for example:
@@ -64,8 +67,13 @@ LINEAGE_USE_PACKAGED_HOST_LIBS=true m your_host_consumer
 ```
 
 The generated directory must be in the same Soong namespace as the matching
-source modules, with access to their licenses. All packages in one invocation
-share that namespace and generated directory. Existing `prebuilt_<module>`
+source modules, with access to their licenses. By default all policy modules are
+emitted in one directory. Use repeatable `--module NAME` arguments to emit only
+selected modules while validating and staging their dependency closure. This
+supports separate adapters under each source directory without duplicate module
+declarations. Regenerate the complete set together when dependencies change;
+availability checks on local snapshot copies do not coordinate other adapters.
+Existing `prebuilt_<module>`
 definitions must be reconciled before adding another replacement.
 
 The helper writes hash-named snapshots, `Android.bp` and `selection.json`.
@@ -103,6 +111,14 @@ been measured.
 `lineage/liblz4/` includes a working experimental recipe for the pinned
 LineageOS LZ4 sources, with compression/decompression checks against both
 packaged linkage variants. See [its commands and configuration](../lineage/liblz4/README.md).
+
+`lineage/boringssl/` exports the reference build's host shared BoringSSL pair
+without recompilation and validates certificate-verified TLS 1.3 against both
+the selected packages and reference libraries. See [its scope and commands](../lineage/boringssl/README.md).
+
+`lineage/host-libraries/` prepares pinned bzip2, zlib, Expat, Zstandard, PNG and
+JPEG packages, including static libraries and a directory-correct integration
+overlay. See [the recipes, validation and limits](../lineage/host-libraries/README.md).
 
 ## Validation
 

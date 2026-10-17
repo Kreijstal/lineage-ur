@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "libraries": [
+    {
+      "module": "libbz", "repository": "external/bzip2",
+      "revision": "0ac9a9daea5cce2e775d5da949508593e2ee9206",
+      "headers": ["*.h"], "licenses": ["LICENSE"],
+      "soong_license": "external_bzip2_license", "linkages": ["static"]
+    },
+    {
+      "module": "libz", "repository": "external/zlib",
+      "revision": "a6f47e8bd7c1ba412c4b5a3539aa77fe628d0172",
+      "headers": ["*.h"], "licenses": ["LICENSE"],
+      "soong_license": "external_zlib_license", "linkages": ["static", "shared"],
+      "unique_host_soname": true
+    },
+    {
+      "module": "libexpat", "repository": "external/expat",
+      "revision": "79dde19a8fe1dfb580d39de37854221a6de5f09b",
+      "headers": ["expat/lib/expat.h", "expat/lib/expat_external.h"],
+      "licenses": ["COPYING"], "soong_license": "external_expat_license",
+      "linkages": ["static"], "unique_host_soname": true
+    },
+    {
+      "module": "libzstd", "repository": "external/zstd",
+      "revision": "b41f7c427a3f03a975ad382ea42e77e2787007c2",
+      "headers": ["lib/zstd.h", "lib/zstd_errors.h", "lib/zdict.h"],
+      "licenses": ["LICENSE", "COPYING"], "soong_license": "external_zstd_license",
+      "linkages": ["static"]
+    },
+    {
+      "module": "libpng", "repository": "external/libpng",
+      "revision": "8b733f94d72804ccf36f1a415df719b458b595f7",
+      "headers": ["*.h"], "licenses": ["LICENSE"],
+      "soong_license": "external_libpng_license", "linkages": ["static"],
+      "dependencies": {"libz": {"linkage": "shared", "reexport_headers": false}}
+    },
+    {
+      "module": "libjpeg", "repository": "external/libjpeg-turbo",
+      "revision": "c80d2fe35369cb76ddd34f5aeb9c34d8c9fefa01",
+      "headers": ["*.h"], "licenses": ["LICENSE.md", "README.ijg"],
+      "soong_license": "external_libjpeg-turbo_license", "linkages": ["static"],
+      "builder": "jpeg-native"
+    }
+  ]
+}

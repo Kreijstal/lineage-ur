@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "libraries": [
+    {
+      "module": "libbz",
+      "repository": "external/bzip2",
+      "revision": "0ac9a9daea5cce2e775d5da949508593e2ee9206",
+      "headers": [
+        "*.h"
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "../host-libraries/smoke/bz.c",
+        "linkage": "static"
+      }
+    },
+    {
+      "module": "libz",
+      "repository": "external/zlib",
+      "revision": "a6f47e8bd7c1ba412c4b5a3539aa77fe628d0172",
+      "headers": [
+        "*.h"
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "../host-libraries/smoke/z.c",
+        "linkage": "shared"
+      }
+    },
+    {
+      "module": "libexpat",
+      "repository": "external/expat",
+      "revision": "79dde19a8fe1dfb580d39de37854221a6de5f09b",
+      "headers": [
+        "expat/lib/expat.h",
+        "expat/lib/expat_external.h"
+      ],
+      "licenses": [
+        "COPYING"
+      ],
+      "runtime": {
+        "smoke": "../host-libraries/smoke/expat.c",
+        "linkage": "shared"
+      }
+    },
+    {
+      "module": "libzstd",
+      "repository": "external/zstd",
+      "revision": "b41f7c427a3f03a975ad382ea42e77e2787007c2",
+      "headers": [
+        "lib/zstd.h",
+        "lib/zstd_errors.h",
+        "lib/zdict.h"
+      ],
+      "licenses": [
+        "LICENSE",
+        "COPYING"
+      ],
+      "runtime": {
+        "smoke": "../host-libraries/smoke/zstd.c",
+        "linkage": "shared"
+      }
+    },
+    {
+      "module": "libpng",
+      "repository": "external/libpng",
+      "revision": "8b733f94d72804ccf36f1a415df719b458b595f7",
+      "headers": [
+        "*.h"
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "../host-libraries/smoke/png.c",
+        "linkage": "shared",
+        "dependencies": [
+          "libz"
+        ]
+      }
+    },
+    {
+      "module": "libjpeg",
+      "repository": "external/libjpeg-turbo",
+      "revision": "c80d2fe35369cb76ddd34f5aeb9c34d8c9fefa01",
+      "headers": [
+        "*.h"
+      ],
+      "licenses": [
+        "LICENSE.md",
+        "README.ijg"
+      ],
+      "runtime": {
+        "smoke": "../host-libraries/smoke/jpeg.c",
+        "linkage": "shared"
+      }
+    },
+    {
+      "module": "libskia",
+      "repository": "external/skia",
+      "revision": "22f5edb6c1bf350d1d9d67bb429db1a5539f3c05",
+      "headers": [
+        {
+          "pattern": "include/**/*.h",
+          "strip_prefix": ""
+        },
+        {
+          "pattern": "android/**/*.h",
+          "strip_prefix": ""
+        }
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "smoke/skia.cpp",
+        "linkage": "static",
+        "include_dirs": [
+          "android",
+          "include/config"
+        ],
+        "cflags": [
+          "-DSKIA_DLL",
+          "-DNDEBUG"
+        ],
+        "shared_dependencies": [
+          "liblog",
+          "libcutils",
+          "libdng_sdk",
+          "libpng",
+          "libz",
+          "libjpeg",
+          "libpiex",
+          "libexpat",
+          "libft2",
+          "libharfbuzz_subset",
+          "libmediandk",
+          "libEGL",
+          "libGLESv2",
+          "libvulkan",
+          "libnativewindow"
+        ],
+        "dependencies": [
+          "libperfetto_client_experimental"
+        ],
+        "reference_link_inputs": [
+          "frameworks/base/libs/hwui/libhwui/android_arm64_armv8-2a-dotprod_shared/generated_rust_staticlib/librustlibs.a",
+          "external/webp/libwebp-decode/android_arm64_armv8-2a-dotprod_static_afdo-libhwui/libwebp-decode.a",
+          "external/webp/libwebp-encode/android_arm64_armv8-2a-dotprod_static_afdo-libhwui/libwebp-encode.a",
+          "external/wuffs-mirror-release-c/libwuffs_mirror_release_c/android_arm64_armv8-2a-dotprod_static_afdo-libhwui/libwuffs_mirror_release_c.a"
+        ]
+      }
+    },
+    {
+      "module": "libskia_renderengine",
+      "repository": "external/skia",
+      "revision": "22f5edb6c1bf350d1d9d67bb429db1a5539f3c05",
+      "headers": [
+        {
+          "pattern": "include/**/*.h",
+          "strip_prefix": ""
+        },
+        {
+          "pattern": "android/**/*.h",
+          "strip_prefix": ""
+        },
+        {
+          "pattern": "renderengine/**/*.h",
+          "strip_prefix": ""
+        }
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "smoke/skia.cpp",
+        "linkage": "static",
+        "include_dirs": [
+          "renderengine",
+          "include/config"
+        ],
+        "cflags": [
+          "-DSKIA_DLL",
+          "-DNDEBUG"
+        ],
+        "shared_dependencies": [
+          "liblog",
+          "libcutils",
+          "libpng",
+          "libz",
+          "libEGL",
+          "libGLESv2",
+          "libvulkan",
+          "libnativewindow"
+        ],
+        "dependencies": [
+          "libperfetto_client_experimental"
+        ]
+      }
+    },
+    {
+      "module": "libperfetto_c",
+      "repository": "external/perfetto",
+      "revision": "df0f96de5f5c811168454194966553c869d56a80",
+      "headers": [
+        {
+          "pattern": "include/**/*.h",
+          "strip_prefix": "include"
+        }
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "smoke/perfetto_c.c",
+        "linkage": "static",
+        "shared_dependencies": [
+          "liblog"
+        ],
+        "reference_archives": [
+          "external/perfetto/perfetto_flags_c_lib/{variant}/perfetto_flags_c_lib.a"
+        ],
+        "include_dirs": [
+          "perfetto/base/build_configs/android_tree"
+        ],
+        "cflags": [
+          "-DNDEBUG",
+          "-DPERFETTO_BUILD_WITH_ANDROID_USERDEBUG"
+        ]
+      },
+      "generated_header_prefix": "external/perfetto"
+    },
+    {
+      "module": "libperfetto_client_experimental",
+      "repository": "external/perfetto",
+      "revision": "df0f96de5f5c811168454194966553c869d56a80",
+      "headers": [
+        {
+          "pattern": "include/**/*.h",
+          "strip_prefix": "include"
+        }
+      ],
+      "licenses": [
+        "LICENSE"
+      ],
+      "runtime": {
+        "smoke": "smoke/perfetto.cpp",
+        "linkage": "static",
+        "shared_dependencies": [
+          "liblog"
+        ],
+        "reference_archives": [
+          "external/perfetto/perfetto_flags_c_lib/{variant}/perfetto_flags_c_lib.a"
+        ],
+        "include_dirs": [
+          "perfetto/base/build_configs/android_tree"
+        ],
+        "cflags": [
+          "-DNDEBUG",
+          "-DPERFETTO_BUILD_WITH_ANDROID_USERDEBUG"
+        ]
+      },
+      "generated_header_prefix": "external/perfetto"
+    }
+  ]
+}

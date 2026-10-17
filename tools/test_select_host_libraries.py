@@ -106,6 +106,17 @@ class HostLibraryTest(unittest.TestCase):
         self.assertIn('static_libs: ["libdep"]', bp)
         self.assertIn('export_static_lib_headers: ["libdep"]', bp)
         self.assertIn("snapshots/libdep-", bp.split("cc_packaged_library_host")[1])
+        # Adapters in separate source directories must not emit duplicate
+        # dependency modules, but still need their complete snapshot inventory.
+        split = self.root / "separate-adapter"
+        lock = prepare(self.policy_path, split, modules=["libreuse"])
+        self.assertEqual([r["module"] for r in lock["libraries"]], ["libreuse"])
+        split_bp = (split / "Android.bp").read_text()
+        self.assertEqual(split_bp.count("cc_packaged_library_host"), 1)
+        self.assertIn('static_libs: ["libdep"]', split_bp)
+        self.assertIn("snapshots/libdep-", split_bp)
+        with self.assertRaises(ValueError):
+            prepare(self.policy_path, self.root / "unknown", modules=["not_in_policy"])
         (dep_dir / "include/reuse.h").unlink()
         self.assertEqual(self.run_selection()["decision"], "source")
         self.policy["libraries"][1]["sha256"] = "0" * 64
@@ -135,6 +146,25 @@ class HostLibraryTest(unittest.TestCase):
     def test_soname_mismatch_rejected(self):
         subprocess.run(["cc", "-shared", "-Wl,-soname,libreuse.so.1", str(self.package / "reuse.o"), "-o", str(self.package / "libreuse.so")], check=True)
         self.manifest["files"]["libreuse.so"] = sha(self.package / "libreuse.so")
+        self.update_manifest()
+        self.assertEqual(self.run_selection()["decision"], "source")
+
+    def test_android_unique_host_soname(self):
+        library = self.package / "libreuse-host.so"
+        subprocess.run(["cc", "-shared", "-Wl,-soname,libreuse-host.so", str(self.package / "reuse.o"),
+                        "-o", str(library)], check=True)
+        self.manifest["shared"] = library.name
+        self.manifest["files"][library.name] = sha(library)
+        self.manifest["unique_host_soname"] = True
+        self.update_manifest()
+        record = self.run_selection()
+        self.assertEqual(record["decision"], "package")
+        self.assertIn("unique_host_soname: true", (self.output / "Android.bp").read_text())
+        # Selection must not silently rename the binary or its SONAME.
+        self.manifest["unique_host_soname"] = False
+        self.update_manifest()
+        self.assertEqual(self.run_selection()["decision"], "source")
+        self.manifest["unique_host_soname"] = "true"
         self.update_manifest()
         self.assertEqual(self.run_selection()["decision"], "source")
 

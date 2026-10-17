@@ -1,4 +1,40 @@
 PYTHON ?= python3
+BORINGSSL_SELECTION ?= artifacts/boringssl-host-selection
+BORINGSSL_REFERENCE_OUT ?=
+HOST_LIBRARIES_SELECTION ?= artifacts/host-libraries-selection
+HOST_LIBRARIES_REFERENCE_OUT ?=
+TARGET_SOURCE_ROOT ?=
+TARGET_SOONG_ROOT ?= ../android_build_soong
+TARGET_PACKAGES ?= artifacts/target-libraries-r8q-v2
+TARGET_QEMU ?= artifacts/qemu-user/usr/bin/qemu-aarch64
+TARGET_RUNTIME_OUT ?= artifacts/target-libraries-runtime-v2
+TARGET_GRAPHICS_PACKAGES ?= artifacts/target-libraries-r8q-graphics-tracing
+TARGET_GRAPHICS_RUNTIME_OUT ?= artifacts/target-graphics-tracing-runtime
+
+.PHONY: check-graphics-tracing
+check-graphics-tracing:
+	$(MAKE) check-target-libraries TARGET_PACKAGES="$(TARGET_GRAPHICS_PACKAGES)" TARGET_RUNTIME_OUT="$(TARGET_GRAPHICS_RUNTIME_OUT)"
+
+.PHONY: check-target-libraries
+check-target-libraries:
+	$(PYTHON) -m py_compile lineage/target-libraries/package.py lineage/target-libraries/apply.py lineage/target-libraries/check.py
+	$(PYTHON) -m json.tool lineage/target-libraries/recipes.json > /dev/null
+	$(PYTHON) -m unittest discover -s tools -p test_target_packages.py -v
+	$(PYTHON) tools/test_soong.py --source-root "$(TARGET_SOURCE_ROOT)" --soong-root "$(TARGET_SOONG_ROOT)" --out-dir artifacts/soong-target-tests --target-overlay "$(TARGET_PACKAGES)/overlay" --run '^(TestPackagedTarget.*|TestTargetPackage.*)$$'
+	$(PYTHON) lineage/target-libraries/check.py --source-root "$(TARGET_SOURCE_ROOT)" --packages "$(TARGET_PACKAGES)" --qemu "$(TARGET_QEMU)" --output "$(TARGET_RUNTIME_OUT)"
+
+.PHONY: check-host-libraries
+check-host-libraries:
+	$(PYTHON) -m py_compile lineage/host-libraries/export.py lineage/host-libraries/jpeg.py lineage/host-libraries/prepare.py lineage/host-libraries/check.py
+	$(PYTHON) -m json.tool lineage/host-libraries/recipes.json > /dev/null
+	$(PYTHON) -m unittest discover -s tools -p test_select_host_libraries.py -v
+	$(PYTHON) lineage/host-libraries/check.py --selection "$(HOST_LIBRARIES_SELECTION)" $(if $(HOST_LIBRARIES_REFERENCE_OUT),--reference-out "$(HOST_LIBRARIES_REFERENCE_OUT)")
+
+.PHONY: check-boringssl
+check-boringssl:
+	$(PYTHON) -m py_compile lineage/boringssl/export.py lineage/boringssl/check.py
+	$(PYTHON) -m unittest discover -s tools -p test_select_host_libraries.py -v
+	$(PYTHON) lineage/boringssl/check.py --selection "$(BORINGSSL_SELECTION)" $(if $(BORINGSSL_REFERENCE_OUT),--reference-out "$(BORINGSSL_REFERENCE_OUT)")
 
 .PHONY: check
 check:

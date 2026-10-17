@@ -15,7 +15,12 @@ def main():
     parser.add_argument("--out-dir", type=Path, default=Path("artifacts/soong-tests"))
     parser.add_argument("--lz4-snapshot", type=Path, help="also check a prepared LZ4 package Android.bp")
     parser.add_argument("--system-tools-snapshot", type=Path, help="also check the generated system-lz4 Android.bp")
-    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPrebuilt.*)$", help="focused Go test name pattern")
+    parser.add_argument("--boringssl-snapshot", type=Path, help="also check the exported BoringSSL shared pair Android.bp")
+    parser.add_argument("--c-libraries-overlay", type=Path, help="also check the six pinned C host library adapters")
+    parser.add_argument("--target-overlay", type=Path, help="also check Android target object packages")
+    parser.add_argument("--context-variables", type=Path, help="print target context instead of running tests")
+    parser.add_argument("--context-out-dir", default="out")
+    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestTargetPackage.*|TestPrebuilt.*)$", help="focused Go test name pattern")
     args = parser.parse_args()
     source = args.source_root.resolve()
     soong = args.soong_root.resolve()
@@ -44,7 +49,26 @@ def main():
         env["LINEAGE_UR_SYSTEM_TOOLS_TEST_SNAPSHOT"] = str(args.system_tools_snapshot.resolve())
     else:
         env.pop("LINEAGE_UR_SYSTEM_TOOLS_TEST_SNAPSHOT", None)
-    subprocess.run([str(go), "test", "-p", "2", "./android", "./genrule", "./cc",
+    if args.boringssl_snapshot:
+        env["LINEAGE_UR_BORINGSSL_TEST_SNAPSHOT"] = str(args.boringssl_snapshot.resolve())
+    else:
+        env.pop("LINEAGE_UR_BORINGSSL_TEST_SNAPSHOT", None)
+    if args.c_libraries_overlay:
+        env["LINEAGE_UR_C_LIBRARIES_TEST_OVERLAY"] = str(args.c_libraries_overlay.resolve())
+    else:
+        env.pop("LINEAGE_UR_C_LIBRARIES_TEST_OVERLAY", None)
+    if args.target_overlay:
+        env["LINEAGE_UR_TARGET_TEST_OVERLAY"] = str(args.target_overlay.resolve())
+    else:
+        env.pop("LINEAGE_UR_TARGET_TEST_OVERLAY", None)
+    if args.context_variables:
+        subprocess.run([str(go), "run", "./cmd/target_package_context", "--variables", str(args.context_variables.resolve()),
+                        "--out-dir", args.context_out_dir], cwd=soong, env=env, check=True)
+        return
+    test_packages = ["./android", "./genrule", "./cc"]
+    if args.target_overlay:
+        test_packages.append("./apex")
+    subprocess.run([str(go), "test", "-p", "2", *test_packages,
                     "-run", args.run, "-count=1"],
                    cwd=soong, env=env, check=True)
 

@@ -8,13 +8,31 @@ The goal is to reuse compatible packaged dependencies and system tools while
 keeping a small, reviewable difference from upstream LineageOS. Initial target:
 `lineage-23.2`, Android 16, Samsung Galaxy S20 FE `SM-G780G` / `r8q`.
 
-**Status:** experimental host-tool and packaged C library reuse are implemented
-and opt-in. No binary packages or APT repository have been published, and no ROM build-time
+**Status:** experimental host-tool, host C library and Android target-object
+reuse are implemented and opt-in. Android object-package bundles are provided in
+the [experimental r8q release](https://github.com/Kreijstal/lineage-ur/releases/tag/target-libraries-r8q-20261017).
+There is no APT repository or automatic package downloader, and no ROM build-time
 speedup is claimed yet. See [system tools](docs/system-tools.md) and
 [host libraries](docs/host-libraries.md).
 
 [System LZ4](lineage/lz4-system/README.md) is the first CLI policy with functional
 Android format checks and a comparison against the pinned source implementation.
+
+[BoringSSL](lineage/boringssl/README.md) adds an experimental read-only export of
+the pinned reference build's host shared libraries, with a verified TLS 1.3
+consumer and opt-in Soong selection. Static and Android device variants retain
+their existing builds.
+
+[Android target libraries](lineage/target-libraries/README.md) packages the
+compiled Android/Bionic objects for ten libraries, including Skia and Perfetto.
+Soong skips matched source
+compilation and retains its Android linking/APEX/ABI rules. This is the path for
+dependencies shipped in LineageOS. Download, checksum verification and integration
+instructions are included in its documentation.
+
+[Six host C libraries](lineage/host-libraries/README.md) adds pinned bzip2, zlib,
+Expat, Zstandard, PNG and JPEG packages, including static variants, consumer
+checks and an overlay that preserves each component's license visibility.
 
 ## Repository layout
 
@@ -68,8 +86,9 @@ tracks LineageOS's Soong on `lineage-ur-23.2`. It adds opt-in
 The compatibility
 selectors are documented in [system tools](docs/system-tools.md) and
 [host libraries](docs/host-libraries.md).
-Target dependency package integration remains planned; default source builds
-retain upstream behavior.
+Target object-package integration uses the `target_package` library property and
+`LINEAGE_USE_PACKAGED_TARGET_LIBS=true`. The recorded fork revision in
+`soong.json` includes this support. Default source builds retain upstream behavior.
 
 For a separate experimental checkout, the optional
 `manifests/lineage-ur-soong.xml` replaces only the `build/soong` project. It is
