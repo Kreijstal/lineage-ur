@@ -19,6 +19,7 @@ def main():
     parser.add_argument("--c-libraries-overlay", type=Path, help="also check the six pinned C host library adapters")
     parser.add_argument("--target-overlay", type=Path, help="also check Android target object packages")
     parser.add_argument("--swiftshader-package", type=Path, help="also check the generated ARM64/Bionic Vulkan HAL package")
+    parser.add_argument("--termux-libraries", type=Path, help="also check independent Termux target library adapters")
     parser.add_argument("--context-variables", type=Path, help="print target context instead of running tests")
     parser.add_argument("--context-out-dir", default="out")
     parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestPackagedSharedTarget.*|TestTargetPackage.*|TestPrebuilt.*)$", help="focused Go test name pattern")
@@ -78,6 +79,10 @@ def main():
         env["LINEAGE_UR_SWIFTSHADER_PACKAGE"] = str(args.swiftshader_package.resolve())
     else:
         env.pop("LINEAGE_UR_SWIFTSHADER_PACKAGE", None)
+    if args.termux_libraries:
+        env["LINEAGE_UR_TERMUX_LIBRARIES"] = str(args.termux_libraries.resolve())
+    else:
+        env.pop("LINEAGE_UR_TERMUX_LIBRARIES", None)
     if args.context_variables:
         subprocess.run([str(go), "run", "./cmd/target_package_context", "--variables", str(args.context_variables.resolve()),
                         "--out-dir", args.context_out_dir], cwd=soong, env=env, check=True)

@@ -8,8 +8,12 @@ The goal is to reuse compatible packaged dependencies and system tools while
 keeping a small, reviewable difference from upstream LineageOS. Initial target:
 `lineage-23.2`, Android 16, Samsung Galaxy S20 FE `SM-G780G` / `r8q`.
 
-**Status:** experimental host-tool, host C library and Android target-object
-reuse are implemented and opt-in. Android object-package bundles are provided in
+**Status:** experimental reuse of independent Termux target libraries, system
+tools, host libraries and cached Android objects is implemented and opt-in.
+[Termux target libraries](lineage/termux-libraries/README.md) import official
+ARM64/Bionic zlib, Zstandard and libpng binaries, validate Android consumers,
+and replace eligible vendor shared-library builds. They are not exports of
+LineageOS objects. Android object-package bundles are provided in
 the [experimental r8q release](https://github.com/Kreijstal/lineage-ur/releases/tag/target-libraries-r8q-20261017).
 There is no APT repository or automatic package downloader, and no ROM build-time
 speedup is claimed yet. See [system tools](docs/system-tools.md) and
@@ -26,8 +30,9 @@ their existing builds.
 [Android target libraries](lineage/target-libraries/README.md) packages the
 compiled Android/Bionic objects for ten libraries, including Skia and Perfetto.
 Soong skips matched source
-compilation and retains its Android linking/APEX/ABI rules. This is the path for
-dependencies shipped in LineageOS. Download, checksum verification and integration
+compilation and retains its Android linking/APEX/ABI rules. These bundles cache
+the pinned Android implementation; they do not replace it with an independently
+maintained dependency. Download, checksum verification and integration
 instructions are included in its documentation.
 
 [Six host C libraries](lineage/host-libraries/README.md) adds pinned bzip2, zlib,
@@ -62,13 +67,15 @@ or publish packages.
 
 1. Pin a working upstream LineageOS manifest and build configuration.
 2. Inspect one component's source, Android changes and build variants.
-3. Package the existing implementation with its headers and required metadata.
+3. Prefer an independently maintained package, such as a Termux Bionic library.
+   Adapt Android-specific differences and validate its consumers. Cached Android
+   objects remain a separate option where an external replacement is unavailable.
 4. Add a Soong prebuilt adapter or a narrowly scoped project-path override.
 5. Validate consumers against the source-built baseline.
 6. Publish reusable artifacts and build unmatched components from source.
 
-Unbundling the current implementation and upgrading to another upstream version
-are separate changes. GitHub Releases can hold package files; a signed APT index
+Independent replacements can use a different upstream version when their Android
+interfaces pass validation. GitHub Releases hold package files; a signed APT index
 and package download URLs will be added once an actual package is ready.
 
 ## Adding the layer to a checkout

@@ -11,10 +11,10 @@ import subprocess
 import tarfile
 
 
-def verify_inputs(staging, paths):
+def verify_inputs(staging, paths, lock_path=None):
     """Compare consumed files with the hash-pinned original Debian payloads."""
     lock = json.loads((staging / "lock.json").read_text())
-    expected = json.loads(Path(__file__).with_name("termux-aarch64.lock.json").read_text())
+    expected = json.loads((lock_path or Path(__file__).with_name("termux-aarch64.lock.json")).read_text())
     if lock["packages"] != expected["packages"]:
         raise ValueError("imported package versions differ from the recipe lock")
     wanted = {p.resolve().relative_to(staging / "root").as_posix(): p for p in paths}

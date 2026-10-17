@@ -38,6 +38,9 @@ check-boringssl:
 
 .PHONY: check
 check:
+	$(PYTHON) -m py_compile lineage/swiftshader/import_termux.py lineage/termux-libraries/prepare.py lineage/termux-libraries/check.py
+	$(PYTHON) -m json.tool lineage/termux-libraries/recipes.json > /dev/null
+	$(PYTHON) -m json.tool lineage/termux-libraries/termux-aarch64.lock.json > /dev/null
 	$(PYTHON) -m json.tool repo.json > /dev/null
 	$(PYTHON) -m json.tool soong.json > /dev/null
 	$(PYTHON) -m json.tool templates/component.json > /dev/null

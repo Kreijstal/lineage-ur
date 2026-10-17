@@ -1,0 +1,10 @@
+{
+  "libraries": [
+    {"module": "libbz", "package": "libbz2", "file": "libbz2.so", "repository": "external/bzip2", "include_dirs": ["."], "smoke": "bz", "restriction": "Android libbz is static-only; shared package cannot replace its archive"},
+    {"module": "libz", "package": "zlib", "file": "libz.so", "repository": "external/zlib", "include_dirs": ["."], "smoke": "z"},
+    {"module": "libexpat", "package": "libexpat", "file": "libexpat.so", "repository": "external/expat", "include_dirs": ["expat/lib"], "smoke": "expat", "restriction": "Default Android integer/bounds-sanitized variants must retain source"},
+    {"module": "libzstd", "package": "zstd", "file": "libzstd.so", "repository": "external/zstd", "include_dirs": ["lib"], "smoke": "zstd"},
+    {"module": "libpng", "package": "libpng", "file": "libpng.so", "repository": "external/libpng", "include_dirs": ["."], "smoke": "png"},
+    {"module": "libjpeg", "package": "libjpeg-turbo", "file": "libjpeg.so", "repository": "external/libjpeg-turbo", "include_dirs": ["."], "smoke": "jpeg", "restriction": "Termux uses JPEG8 ABI; Android uses JPEG62 ABI"}
+  ]
+}

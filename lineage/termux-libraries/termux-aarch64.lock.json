@@ -1,0 +1,44 @@
+{
+  "repository": "https://packages.termux.dev/apt/termux-main/",
+  "index_url": "https://packages.termux.dev/apt/termux-main/dists/stable/main/binary-aarch64/Packages.gz",
+  "index_sha256": "7154628ea138c9715522ffee31d5a2d765554167b0e468122011de62baffb17f",
+  "architecture": "aarch64",
+  "packages": {
+    "libbz2": {
+      "Version": "1.0.8-8",
+      "Filename": "pool/main/libb/libbz2/libbz2_1.0.8-8_aarch64.deb",
+      "SHA256": "4335d7f060650b0aabef545d1334c2f9f280223d5962e13c24a00ec934b794ba",
+      "Size": "26116"
+    },
+    "libexpat": {
+      "Version": "2.9.0",
+      "Filename": "pool/main/libe/libexpat/libexpat_2.9.0_aarch64.deb",
+      "SHA256": "f8a104e8227c9c181f6818658a3ee2fa4c107fac94219b068144fc6591086cdb",
+      "Size": "100256"
+    },
+    "libjpeg-turbo": {
+      "Version": "3.2.0",
+      "Filename": "pool/main/libj/libjpeg-turbo/libjpeg-turbo_3.2.0_aarch64.deb",
+      "SHA256": "e6339075bcde28b4902d5a51f4063164834abfd2fa115e881ae637a34585e54f",
+      "Size": "453600"
+    },
+    "libpng": {
+      "Version": "1.6.59",
+      "Filename": "pool/main/libp/libpng/libpng_1.6.59_aarch64.deb",
+      "SHA256": "32d61f0b1a60cf7283aa3a80e288737493df2c6b84c8c749606b77c94a10f2b2",
+      "Size": "195892"
+    },
+    "zlib": {
+      "Version": "1.3.2",
+      "Filename": "pool/main/z/zlib/zlib_1.3.2_aarch64.deb",
+      "SHA256": "75e7d0af17fcc3b40004309fdc00a1ddb9ae08346dce5e269902c34ac3966ac9",
+      "Size": "62840"
+    },
+    "zstd": {
+      "Version": "1.5.7-1",
+      "Filename": "pool/main/z/zstd/zstd_1.5.7-1_aarch64.deb",
+      "SHA256": "e1b4a5113648da8de189620ba1fce74c48b2d0833d9043391b9a1c91fb606fd3",
+      "Size": "360488"
+    }
+  }
+}
