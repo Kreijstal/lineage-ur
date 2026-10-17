@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "experimental_host_jit_passed_android_unvalidated",
+  "validated_at_utc": "2026-10-17T10:51:59.201209+00:00",
+  "evidence": "host_runtime_verified",
+  "upstream": {
+    "repository": "https://swiftshader.googlesource.com/SwiftShader",
+    "revision": "cddb5c91b23ff70a1f607ea31610aa0d7f4b5ad5"
+  },
+  "patch": {
+    "path": "patches/system-llvm22.patch",
+    "sha256": "bacb17f8fdaf07f722af0437e4f621c1e3427ff911d0d5668ed9cac6c07ae1ac"
+  },
+  "platform": "linux-x86_64-glibc",
+  "compiler": "clang version 22.1.8",
+  "llvm_version": "22.1.8",
+  "llvm_shared_library": "/usr/lib/libLLVM.so.22.1",
+  "llvm_shared_library_sha256": "06662e11c1faa7b4cb199e03c9ef681b74655ad4274473273b41dfc754a6f16f",
+  "configure_command": "cmake -S lineage/swiftshader -B artifacts/swiftshader-llvm22 -G Ninja -DSWIFTSHADER_SOURCE=/home/kreijstal/git/swiftshader-upstream -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++",
+  "build_command": "cmake --build artifacts/swiftshader-llvm22 --target LineageSwiftShaderReactorTests -j2",
+  "test_command": "timeout 180 artifacts/swiftshader-llvm22/LineageSwiftShaderReactorTests --gtest_output=xml:artifacts/swiftshader-llvm22/reactor-results.xml > artifacts/swiftshader-llvm22/reactor-tests.log 2>&1",
+  "tests": {
+    "tests": "156",
+    "failures": "0",
+    "disabled": "0",
+    "errors": "0",
+    "time": "4.35"
+  },
+  "ir_verification": true,
+  "result_xml_sha256": "85df251ed253d7013473ef1184911629bd8c98b618bf24d8b79473705350e228",
+  "not_validated": [
+    "Android/Bionic ARM64",
+    "Android Soong selection",
+    "Vulkan rendering or conformance",
+    "ROM integration",
+    "bundled LLVM backend regression",
+    "debug-info or sanitizer configurations"
+  ]
+}

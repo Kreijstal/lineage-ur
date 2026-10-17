@@ -18,9 +18,10 @@ def main():
     parser.add_argument("--boringssl-snapshot", type=Path, help="also check the exported BoringSSL shared pair Android.bp")
     parser.add_argument("--c-libraries-overlay", type=Path, help="also check the six pinned C host library adapters")
     parser.add_argument("--target-overlay", type=Path, help="also check Android target object packages")
+    parser.add_argument("--swiftshader-package", type=Path, help="also check the generated ARM64/Bionic Vulkan HAL package")
     parser.add_argument("--context-variables", type=Path, help="print target context instead of running tests")
     parser.add_argument("--context-out-dir", default="out")
-    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestTargetPackage.*|TestPrebuilt.*)$", help="focused Go test name pattern")
+    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestPackagedSharedTarget.*|TestTargetPackage.*|TestPrebuilt.*)$", help="focused Go test name pattern")
     args = parser.parse_args()
     source = args.source_root.resolve()
     soong = args.soong_root.resolve()
@@ -28,6 +29,18 @@ def main():
     go = source / "prebuilts/go/linux-x86/bin/go"
     if not go.is_file() or not (soong / "go.work").is_file():
         parser.error("need a synced reference checkout and the separate Soong fork")
+    # `go test` discovers every Go file, while Soong bootstrap uses explicit
+    # lists. Verify that the tested integration is also compiled by Soong.
+    for package, files in {
+        "android": ["target_package.go", "target_package_test.go"],
+        "cc": ["packaged_target.go", "packaged_binary.go", "packaged_target_test.go",
+               "packaged_target_overlay_test.go", "packaged_binary_test.go"],
+        "apex": ["packaged_target_test.go", "packaged_binary_test.go"],
+    }.items():
+        blueprint = (soong / package / "Android.bp").read_text()
+        for filename in files:
+            if '"' + filename + '"' not in blueprint:
+                parser.error(package + "/" + filename + " is missing from Soong bootstrap inputs")
     # Rebase upstream's relative workspace paths onto the reference checkout,
     # replacing only its Soong module with our fork. Write nothing to that tree.
     def resolve(match):
@@ -61,12 +74,16 @@ def main():
         env["LINEAGE_UR_TARGET_TEST_OVERLAY"] = str(args.target_overlay.resolve())
     else:
         env.pop("LINEAGE_UR_TARGET_TEST_OVERLAY", None)
+    if args.swiftshader_package:
+        env["LINEAGE_UR_SWIFTSHADER_PACKAGE"] = str(args.swiftshader_package.resolve())
+    else:
+        env.pop("LINEAGE_UR_SWIFTSHADER_PACKAGE", None)
     if args.context_variables:
         subprocess.run([str(go), "run", "./cmd/target_package_context", "--variables", str(args.context_variables.resolve()),
                         "--out-dir", args.context_out_dir], cwd=soong, env=env, check=True)
         return
     test_packages = ["./android", "./genrule", "./cc"]
-    if args.target_overlay:
+    if args.target_overlay or args.swiftshader_package:
         test_packages.append("./apex")
     subprocess.run([str(go), "test", "-p", "2", *test_packages,
                     "-run", args.run, "-count=1"],

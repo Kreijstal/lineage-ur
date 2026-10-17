@@ -12,6 +12,8 @@ static-library consumers and per-component integration adapters.
 `target-libraries/` packages Android/Bionic compilation objects for the six C
 libraries plus four Skia/Perfetto libraries, with source-module defaults,
 guarded integration and ARM64 runtime checks.
+`swiftshader/` packages a pinned upstream Android/Bionic ARM64 Vulkan HAL using
+Termux's LLVM 21, with an opt-in Soong adapter and compute execution checks.
 
 Start from the existing LineageOS implementation. Record its repository and
 commit, exact inputs, required variants and dependencies before attempting an

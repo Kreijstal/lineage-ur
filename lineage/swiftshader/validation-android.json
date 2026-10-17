@@ -1,0 +1,131 @@
+{
+  "scope": "synthetic ARM64/Bionic Vulkan execution; no physical hardware or display validation",
+  "android_hal_required": true,
+  "returncode": 0,
+  "stdout": "device: SwiftShader Device (LLVM 21.1.8)\nPASS: Android HAL open, AHB entry points, gralloc usage, 256 JIT-computed values\n",
+  "stderr": "linker: Warning: failed to find generated linker configuration from \"/linkerconfig/ld.config.txt\"\nWARNING: linker: Warning: failed to find generated linker configuration from \"/linkerconfig/ld.config.txt\"\n",
+  "library_sha256": "0058a5eb9b6e347c4fa6d03267fe6ea093fc11adedd935bbb2216d0c1953f07f",
+  "consumer_sha256": "5c1a72d4570f669111fda8dcb0b5db618ee5fccc046402c20dedf70297a9b254",
+  "shader_sha256": "bb7c4a684a2771962404b7e828a3cbb5e98adeff97a6fcfd413efbe6431686dc",
+  "qemu_sha256": "05656008dd72be1c4bf700ffba54a3c6cdbcbde3b669cb16860f096ef3e5a381",
+  "status": "experimental_android_bionic_package_runtime_passed",
+  "validated_at_utc": "2026-10-17T11:48:48.266374+00:00",
+  "upstream_revision": "cddb5c91b23ff70a1f607ea31610aa0d7f4b5ad5",
+  "patch_sha256": "75690826919d5896c8b5217ed1d6c1fb95d3d0b813a175ad4e32e4204e0c1e7b",
+  "termux_lock_sha256": "6e6a21685387df5a608b9e77f0a88b0c2b89bf173ac36ca4d06c818b0a04cb7d",
+  "manifest_sha256": "26614fec0dafd5efb51b5b38f82037f8a8df165fcc1f6df5c484550b1b7b2b92",
+  "payload_libraries": {
+    "vulkan.pastel": "lib64/hw/vulkan.pastel.so",
+    "liblineage_ur_llvm21": "lib64/liblineage_ur_llvm21.so",
+    "liblineage_ur_cxx": "lib64/liblineage_ur_cxx.so",
+    "liblineage_ur_xml2": "lib64/liblineage_ur_xml2.so",
+    "liblineage_ur_iconv": "lib64/liblineage_ur_iconv.so",
+    "liblineage_ur_z": "lib64/liblineage_ur_z.so",
+    "liblineage_ur_zstd": "lib64/liblineage_ur_zstd.so",
+    "liblineage_ur_ffi": "lib64/liblineage_ur_ffi.so"
+  },
+  "library_bytes": 169653088,
+  "build_commands": {
+    "configure": [
+      "cmake",
+      "-S",
+      "/home/kreijstal/git/lineage-ur/lineage/swiftshader/android",
+      "-B",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-bionic-arm64/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_TOOLCHAIN_FILE=/home/kreijstal/git/lineage-ur/artifacts/swiftshader-bionic-arm64/toolchain.cmake",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DSWIFTSHADER_SOURCE=/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-source",
+      "-DANDROID_SOURCE=/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source",
+      "-DTERMUX_PREFIX=/home/kreijstal/git/lineage-ur/artifacts/swiftshader-termux-aarch64/root/data/data/com.termux/files/usr"
+    ],
+    "build": [
+      "cmake",
+      "--build",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-bionic-arm64/build",
+      "--target",
+      "vk_swiftshader",
+      "-j2"
+    ]
+  },
+  "runtime_commands": {
+    "shader": [
+      "glslangValidator",
+      "-V",
+      "--target-env",
+      "vulkan1.1",
+      "/home/kreijstal/git/lineage-ur/lineage/swiftshader/android/compute.comp",
+      "-o",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-runtime-final/compute.spv"
+    ],
+    "consumer": [
+      "/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/prebuilts/clang/host/linux-x86/clang-r563880c/bin/clang",
+      "--target=aarch64-linux-android36",
+      "--sysroot=/home/kreijstal/git/lineage-ur/artifacts/swiftshader-bionic-arm64/sysroot",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-parameter",
+      "-fPIE",
+      "-pie",
+      "-I/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-source/include",
+      "-I/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/frameworks/native/vulkan/include",
+      "-I/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/hardware/libhardware/include_all",
+      "-I/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/system/core/libcutils/include",
+      "-I/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/system/core/libsystem/include",
+      "/home/kreijstal/git/lineage-ur/lineage/swiftshader/android/consumer.c",
+      "-ldl",
+      "-o",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-runtime-final/vulkan-consumer",
+      "-Wl,--dynamic-linker=/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.runtime/bin/linker64"
+    ],
+    "execute": [
+      "/home/kreijstal/git/lineage-ur/artifacts/qemu-user/usr/bin/qemu-aarch64",
+      "-cpu",
+      "max",
+      "-E",
+      "LD_LIBRARY_PATH=/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-package-final/package/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.runtime/lib64/bionic:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/system/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.adbd/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.adservices/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.adservices.fullmodule/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.adservices.smallmodule/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.appsearch/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.art/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.art.debug/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.art.testing/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.bt/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.configinfrastructure/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.conscrypt/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.extservices/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.i18n/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.media/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.media.swcodec/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.mediaprovider/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.neuralnetworks/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.nfcservices/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.ondevicepersonalization/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.os.statsd/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.profiling/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.resolv/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.runtime/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.tethering/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.uprobestats/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.uwb/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.virt/lib64:/home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source/out/target/product/r8q/apex/com.android.wifi/lib64",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-runtime-final/vulkan-consumer",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-package-final/package/lib64/hw/vulkan.pastel.so",
+      "/home/kreijstal/git/lineage-ur/artifacts/swiftshader-android-runtime-final/compute.spv"
+    ]
+  },
+  "termux_reference_result": {
+    "scope": "synthetic ARM64/Bionic Vulkan execution; no physical hardware or display validation",
+    "android_hal_required": false,
+    "returncode": 0,
+    "stdout": "device: SwiftShader Device (LLVM 10.0.0)\nPASS: standalone Bionic ICD, 256 JIT-computed values\n",
+    "stderr": "linker: Warning: failed to find generated linker configuration from \"/linkerconfig/ld.config.txt\"\nWARNING: linker: Warning: failed to find generated linker configuration from \"/linkerconfig/ld.config.txt\"\n",
+    "library_sha256": "8b8053b67e5ce662d4006664b99625d75d044b589592c319acaade3636a28da7",
+    "consumer_sha256": "5c1a72d4570f669111fda8dcb0b5db618ee5fccc046402c20dedf70297a9b254",
+    "shader_sha256": "bb7c4a684a2771962404b7e828a3cbb5e98adeff97a6fcfd413efbe6431686dc",
+    "qemu_sha256": "05656008dd72be1c4bf700ffba54a3c6cdbcbde3b669cb16860f096ef3e5a381"
+  },
+  "not_validated": [
+    "booted ROM with package",
+    "Vulkan conformance",
+    "display or swapchain presentation",
+    "actual AHardwareBuffer allocation/import/export",
+    "SELinux and Android linker namespaces in guest",
+    "physical hardware",
+    "ARM32 or debug driver variants"
+  ],
+  "soong_revision": "a15313cc0d5d99519a2cad30c2b3d507aabd94e7",
+  "soong_test_command": "python3 tools/test_soong.py --source-root /home/kreijstal/git/s20fe-hardware-lab/artifacts/lineage/source --soong-root /home/kreijstal/git/android_build_soong --out-dir artifacts/soong-target-tests --swiftshader-package artifacts/swiftshader-android36-arm64 --target-overlay artifacts/target-libraries-r8q-graphics-tracing/overlay --boringssl-snapshot artifacts/boringssl-host-selection --c-libraries-overlay artifacts/host-libraries-overlay --run '^(TestPackagedSharedTarget.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestTargetPackage.*|TestPrebuilt.*)$'",
+  "soong_test_result": "ok  \tandroid/soong/android\t0.199s\nok  \tandroid/soong/genrule\t0.071s\nok  \tandroid/soong/cc\t57.019s\nok  \tandroid/soong/apex\t28.699s\n",
+  "protected_r8q_output": {
+    "verified_utc": "2026-10-17T11:47:55.808201+00:00",
+    "metadata": {
+      "files": 49922,
+      "sha256": "778fdae53b8b7c81d9a046ec581b0146bc69ce9dd49ef832e0c611c03a9ba3d3"
+    },
+    "unchanged": true
+  },
+  "archive": {
+    "name": "lineage-swiftshader-android36-arm64-20261017.tar.zst",
+    "sha256": "2343c78d68e493bed8417eb2fb71c5cf66e15674fb90598fe9863ba52c26afdc",
+    "bytes": 46741230
+  }
+}

@@ -1,0 +1,330 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0ef4a68..818b7c3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -29,11 +29,14 @@ endif()
+ # Detect system
+ ###########################################################
+ 
+-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
++if(SWIFTSHADER_ANDROID_PLATFORM)
++    set(ANDROID TRUE)
++    set(LINUX FALSE)
++elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+     set(LINUX TRUE)
+ elseif(CMAKE_SYSTEM_NAME MATCHES "Android")
+     set(ANDROID TRUE)
+-    set(CMAKE_CXX_FLAGS "-DANDROID_NDK_BUILD")
++    add_compile_definitions(ANDROID_NDK_BUILD)
+ elseif(WIN32)
+ elseif(APPLE)
+ elseif(FUCHSIA)
+@@ -210,7 +213,7 @@ endif()
+ 
+ set(DEFAULT_REACTOR_BACKEND "LLVM")
+ set(REACTOR_BACKEND ${DEFAULT_REACTOR_BACKEND} CACHE STRING "JIT compiler back-end used by Reactor")
+-set_property(CACHE REACTOR_BACKEND PROPERTY STRINGS LLVM LLVM-Submodule Subzero)
++set_property(CACHE REACTOR_BACKEND PROPERTY STRINGS LLVM LLVM-System LLVM-Submodule Subzero)
+ 
+ if(ARCH STREQUAL "loongarch64")
+   set(DEFAULT_SWIFTSHADER_LLVM_VERSION "16.0")
+@@ -339,10 +342,12 @@ macro(set_shared_library_export_map TARGET DIR)
+         if(NOT SWIFTSHADER_MSAN AND NOT SWIFTSHADER_ASAN AND NOT SWIFTSHADER_TSAN AND NOT SWIFTSHADER_UBSAN)
+             set_property(TARGET ${TARGET} APPEND_STRING PROPERTY LINK_FLAGS " -Wl,-undefined,error")
+         endif()
+-    elseif(LINUX OR FUCHSIA)
++    elseif(LINUX OR FUCHSIA OR ANDROID)
+         # NOTE: The Fuchsia linker script is needed to export the vk_icdInitializeConnectToServiceCallback
+         # entry point (a private implementation detail betwen the Fuchsia Vulkan loader and the ICD).
+-        if ((FUCHSIA) AND ("${TARGET}" STREQUAL "vk_swiftshader"))
++        if(ANDROID AND "${TARGET}" STREQUAL "vk_swiftshader")
++          set(LINKER_VERSION_SCRIPT "android_vk_swiftshader.lds")
++        elseif ((FUCHSIA) AND ("${TARGET}" STREQUAL "vk_swiftshader"))
+           set(LINKER_VERSION_SCRIPT "fuchsia_vk_swiftshader.lds")
+         else()
+           set(LINKER_VERSION_SCRIPT "${TARGET}.lds")
+@@ -686,7 +691,28 @@ endif()
+ ###########################################################
+ # LLVM
+ ###########################################################
+-add_subdirectory(${THIRD_PARTY_DIR}/llvm-${SWIFTSHADER_LLVM_VERSION} EXCLUDE_FROM_ALL)
++if(REACTOR_BACKEND STREQUAL "LLVM-System")
++    if(SWIFTSHADER_LLVM_LIBRARY AND SWIFTSHADER_LLVM_INCLUDE_DIR)
++        add_library(LLVM SHARED IMPORTED GLOBAL)
++        set_target_properties(LLVM PROPERTIES IMPORTED_LOCATION "${SWIFTSHADER_LLVM_LIBRARY}")
++        set(LLVM_INCLUDE_DIRS "${SWIFTSHADER_LLVM_INCLUDE_DIR}")
++        set(LLVM_PACKAGE_VERSION "${SWIFTSHADER_LLVM_PACKAGE_VERSION}")
++    else()
++        find_package(LLVM REQUIRED CONFIG)
++    endif()
++    if(LLVM_PACKAGE_VERSION VERSION_LESS "21.0")
++        message(FATAL_ERROR "LLVM-System currently requires LLVM 21 or newer")
++    endif()
++    if(NOT TARGET LLVM)
++        message(FATAL_ERROR "LLVM-System requires a packaged shared LLVM CMake target")
++    endif()
++    add_library(llvm INTERFACE)
++    target_include_directories(llvm SYSTEM INTERFACE ${LLVM_INCLUDE_DIRS})
++    target_link_libraries(llvm INTERFACE LLVM)
++    message(STATUS "Using packaged LLVM ${LLVM_PACKAGE_VERSION} from ${LLVM_DIR}")
++else()
++    add_subdirectory(${THIRD_PARTY_DIR}/llvm-${SWIFTSHADER_LLVM_VERSION} EXCLUDE_FROM_ALL)
++endif()
+ set_target_properties(llvm PROPERTIES FOLDER "third_party")
+ 
+ ###########################################################
+@@ -772,6 +798,8 @@ endif()
+ 
+ if(WIN32)
+     set(OS_LIBS odbc32 odbccp32 WS2_32 dxguid)
++elseif(ANDROID)
++    set(OS_LIBS dl log nativewindow hardware sync)
+ elseif(LINUX)
+     set(OS_LIBS dl pthread)
+     if(SWIFTSHADER_BUILD_WSI_WAYLAND)
+@@ -802,14 +830,14 @@ endif()
+ 
+ add_subdirectory(src/Reactor) # Add ReactorSubzero and ReactorLLVM targets
+ 
+-if(${REACTOR_BACKEND} STREQUAL "LLVM")
++if(REACTOR_BACKEND STREQUAL "LLVM" OR REACTOR_BACKEND STREQUAL "LLVM-System")
+     add_library(Reactor ALIAS ReactorLLVM)
+ elseif(${REACTOR_BACKEND} STREQUAL "LLVM-Submodule")
+     add_library(Reactor ALIAS ReactorLLVMSubmodule)
+ elseif(${REACTOR_BACKEND} STREQUAL "Subzero")
+     add_library(Reactor ALIAS ReactorSubzero)
+ else()
+-    message(FATAL_ERROR "REACTOR_BACKEND must be 'LLVM', 'LLVM-Submodule' or 'Subzero'")
++    message(FATAL_ERROR "REACTOR_BACKEND must be 'LLVM', 'LLVM-System', 'LLVM-Submodule' or 'Subzero'")
+ endif()
+ 
+ if (NOT TARGET SPIRV-Tools)
+@@ -849,6 +877,8 @@ elseif(LINUX)
+             target_compile_definitions(vk_base INTERFACE "VK_USE_PLATFORM_DISPLAY_KHR")
+         endif()
+     endif(SWIFTSHADER_BUILD_WSI_D2D)
++elseif(ANDROID)
++    target_compile_definitions(vk_base INTERFACE VK_USE_PLATFORM_ANDROID_KHR SWIFTSHADER_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER)
+ elseif(APPLE)
+     target_compile_definitions(vk_base INTERFACE "VK_USE_PLATFORM_MACOS_MVK")
+     target_compile_definitions(vk_base INTERFACE "VK_USE_PLATFORM_METAL_EXT")
+diff --git a/src/Reactor/LLVMJIT.cpp b/src/Reactor/LLVMJIT.cpp
+index 6db6ca1..3b38f06 100644
+--- a/src/Reactor/LLVMJIT.cpp
++++ b/src/Reactor/LLVMJIT.cpp
+@@ -37,6 +37,10 @@ __pragma(warning(push))
+ 
+ #include "llvm/ExecutionEngine/Orc/CompileUtils.h"
+ #include "llvm/ExecutionEngine/Orc/IRCompileLayer.h"
++#if LLVM_VERSION_MAJOR >= 21
++#include "llvm/ExecutionEngine/Orc/AbsoluteSymbols.h"
++#include "llvm/ExecutionEngine/Orc/SelfExecutorProcessControl.h"
++#endif
+ 
+ #if USE_LEGACY_OBJECT_LINKING_LAYER
+ #include "llvm/ExecutionEngine/Orc/RTDyldObjectLinkingLayer.h"
+@@ -231,8 +235,13 @@ JITGlobals *JITGlobals::get()
+ 
+ 		// Retrieve host CPU name and sub-target features and add them to builder.
+ 		// Relocation model, code model and codegen opt level are kept to default values.
++#if LLVM_VERSION_MAJOR >= 21
++		auto cpuFeatures = llvm::sys::getHostCPUFeatures();
++		bool ok = !cpuFeatures.empty();
++#else
+ 		llvm::StringMap<bool> cpuFeatures;
+ 		bool ok = llvm::sys::getHostCPUFeatures(cpuFeatures);
++#endif
+ 
+ #if defined(__i386__) || defined(__x86_64__) || \
+     (defined(__linux__) && (defined(__arm__) || defined(__aarch64__)))
+@@ -808,7 +817,11 @@ public:
+ 	    , session(std::move(Unwrap(llvm::orc::SelfExecutorProcessControl::Create())))
+ #endif
+ #if USE_LEGACY_OBJECT_LINKING_LAYER
+-	    , objectLayer(session, [this]() {
++	    , objectLayer(session, [this](
++#if LLVM_VERSION_MAJOR >= 21
++	                              const llvm::MemoryBuffer &
++#endif
++	                              ) {
+ 		    return std::make_unique<llvm::SectionMemoryManager>(&memoryMapper);
+ 	    })
+ #else
+@@ -947,7 +960,11 @@ JITBuilder::JITBuilder()
+     , module(new llvm::Module("", *context))
+     , builder(new llvm::IRBuilder<>(*context))
+ {
++#if LLVM_VERSION_MAJOR >= 21
++	module->setTargetTriple(llvm::Triple(LLVM_DEFAULT_TARGET_TRIPLE));
++#else
+ 	module->setTargetTriple(LLVM_DEFAULT_TARGET_TRIPLE);
++#endif
+ 	module->setDataLayout(JITGlobals::get()->getDataLayout());
+ 
+ 	msanInstrumentation = getPragmaState(MemorySanitizerInstrumentation);
+diff --git a/src/Reactor/LLVMReactor.cpp b/src/Reactor/LLVMReactor.cpp
+index c3ed18d..5a62ac0 100644
+--- a/src/Reactor/LLVMReactor.cpp
++++ b/src/Reactor/LLVMReactor.cpp
+@@ -26,11 +26,12 @@
+ #include "llvm/Config/llvm-config.h"
+ #include "llvm/IR/Intrinsics.h"
+ #include "llvm/IR/IntrinsicsX86.h"
++#include "llvm/IR/Module.h"
+ #include "llvm/Support/Alignment.h"
+ #include "llvm/Support/Error.h"
+ #include "llvm/Support/ManagedStatic.h"
+ 
+-#if LLVM_VERSION_MAJOR >= 10 && LLVM_VERSION_MAJOR < 9999
++#if LLVM_VERSION_MAJOR < 21
+ #define GET_INTRINSIC_DECLARATION llvm::Intrinsic::getDeclaration
+ #else
+ #define GET_INTRINSIC_DECLARATION llvm::Intrinsic::getOrInsertDeclaration
+@@ -92,7 +93,7 @@ auto getNumElements(llvm::FixedVectorType *vec)
+ 
+ llvm::PointerType *getPointerTo(llvm::Type *type, unsigned int addressSpace = 0)
+ {
+-#if LLVM_VERSION_MAJOR > 23
++#if LLVM_VERSION_MAJOR >= 21
+ 	return llvm::PointerType::get(type->getContext(), addressSpace);
+ #else
+ 	return type->getPointerTo(addressSpace);
+@@ -1063,14 +1064,18 @@ Value *Nucleus::createMaskedLoad(Value *ptr, Type *elTy, Value *mask, unsigned i
+ 
+ 	auto numEls = llvm::cast<llvm::FixedVectorType>(V(mask)->getType())->getNumElements();
+ 	auto i1Ty = llvm::Type::getInt1Ty(*jit->context);
+-	auto i32Ty = llvm::Type::getInt32Ty(*jit->context);
+ 	auto elVecTy = llvm::VectorType::get(T(elTy), numEls, false);
+-	auto elVecPtrTy = getPointerTo(elVecTy);
+ 	auto i8Mask = jit->builder->CreateIntCast(V(mask), llvm::VectorType::get(i1Ty, numEls, false), false);  // vec<int, int, ...> -> vec<bool, bool, ...>
+ 	auto passthrough = zeroMaskedLanes ? llvm::Constant::getNullValue(elVecTy) : llvm::UndefValue::get(elVecTy);
++#if LLVM_VERSION_MAJOR >= 22
++	return V(jit->builder->CreateMaskedLoad(elVecTy, V(ptr), llvm::Align(alignment), i8Mask, passthrough));
++#else
++	auto i32Ty = llvm::Type::getInt32Ty(*jit->context);
++	auto elVecPtrTy = getPointerTo(elVecTy);
+ 	auto align = llvm::ConstantInt::get(i32Ty, alignment);
+ 	auto func = GET_INTRINSIC_DECLARATION(jit->module.get(), llvm::Intrinsic::masked_load, { elVecTy, elVecPtrTy });
+ 	return V(jit->builder->CreateCall(func, { V(ptr), align, i8Mask, passthrough }));
++#endif
+ }
+ 
+ void Nucleus::createMaskedStore(Value *ptr, Value *val, Value *mask, unsigned int alignment)
+@@ -1085,11 +1090,15 @@ void Nucleus::createMaskedStore(Value *ptr, Value *val, Value *mask, unsigned in
+ 	auto i1Ty = llvm::Type::getInt1Ty(*jit->context);
+ 	auto i32Ty = llvm::Type::getInt32Ty(*jit->context);
+ 	auto elVecTy = V(val)->getType();
+-	auto elVecPtrTy = getPointerTo(elVecTy);
+ 	auto i1Mask = jit->builder->CreateIntCast(V(mask), llvm::VectorType::get(i1Ty, numEls, false), false);  // vec<int, int, ...> -> vec<bool, bool, ...>
++#if LLVM_VERSION_MAJOR >= 22
++	jit->builder->CreateMaskedStore(V(val), V(ptr), llvm::Align(alignment), i1Mask);
++#else
++	auto elVecPtrTy = getPointerTo(elVecTy);
+ 	auto align = llvm::ConstantInt::get(i32Ty, alignment);
+ 	auto func = GET_INTRINSIC_DECLARATION(jit->module.get(), llvm::Intrinsic::masked_store, { elVecTy, elVecPtrTy });
+ 	jit->builder->CreateCall(func, { V(val), V(ptr), align, i1Mask });
++#endif
+ 
+ 	if(__has_feature(memory_sanitizer) && !jit->msanInstrumentation)
+ 	{
+@@ -1130,7 +1139,6 @@ static llvm::Value *createGather(llvm::Value *base, llvm::Type *elTy, llvm::Valu
+ 
+ 	auto numEls = llvm::cast<llvm::FixedVectorType>(mask->getType())->getNumElements();
+ 	auto i1Ty = llvm::Type::getInt1Ty(*jit->context);
+-	auto i32Ty = llvm::Type::getInt32Ty(*jit->context);
+ 	auto i8Ty = llvm::Type::getInt8Ty(*jit->context);
+ 	auto i8PtrTy = getPointerTo(i8Ty);
+ 	auto elPtrTy = getPointerTo(elTy);
+@@ -1144,9 +1152,14 @@ static llvm::Value *createGather(llvm::Value *base, llvm::Type *elTy, llvm::Valu
+ 
+ 	if(!__has_feature(memory_sanitizer))
+ 	{
++#if LLVM_VERSION_MAJOR >= 22
++		return jit->builder->CreateMaskedGather(elVecTy, elPtrs, llvm::Align(alignment), i1Mask, passthrough);
++#else
++		auto i32Ty = llvm::Type::getInt32Ty(*jit->context);
+ 		auto align = llvm::ConstantInt::get(i32Ty, alignment);
+ 		auto func = GET_INTRINSIC_DECLARATION(jit->module.get(), llvm::Intrinsic::masked_gather, { elVecTy, elPtrVecTy });
+ 		return jit->builder->CreateCall(func, { elPtrs, align, i1Mask, passthrough });
++#endif
+ 	}
+ 	else  // __has_feature(memory_sanitizer)
+ 	{
+@@ -1211,9 +1224,13 @@ static void createScatter(llvm::Value *base, llvm::Value *val, llvm::Value *offs
+ 
+ 	if(!__has_feature(memory_sanitizer))
+ 	{
++#if LLVM_VERSION_MAJOR >= 22
++		jit->builder->CreateMaskedScatter(val, elPtrs, llvm::Align(alignment), i1Mask);
++#else
+ 		auto align = llvm::ConstantInt::get(i32Ty, alignment);
+ 		auto func = GET_INTRINSIC_DECLARATION(jit->module.get(), llvm::Intrinsic::masked_scatter, { elVecTy, elPtrVecTy });
+ 		jit->builder->CreateCall(func, { val, elPtrs, align, i1Mask });
++#endif
+ 	}
+ 	else  // __has_feature(memory_sanitizer)
+ 	{
+@@ -1818,7 +1835,11 @@ Value *Nucleus::createConstantVector(std::vector<double> constants, Type *type)
+ Value *Nucleus::createConstantString(const char *v)
+ {
+ 	// NOTE: Do not call RR_DEBUG_INFO_UPDATE_LOC() here to avoid recursion when called from rr::Printv
++#if LLVM_VERSION_MAJOR >= 21
++	auto ptr = jit->builder->CreateGlobalString(v);
++#else
+ 	auto ptr = jit->builder->CreateGlobalStringPtr(v);
++#endif
+ 	return V(ptr);
+ }
+ 
+@@ -3393,7 +3414,11 @@ RValue<Pointer<Byte>> ConstantData(const void *data, size_t size)
+ {
+ 	RR_DEBUG_INFO_UPDATE_LOC();
+ 	auto str = ::std::string(reinterpret_cast<const char *>(data), size);
++#if LLVM_VERSION_MAJOR >= 21
++	auto ptr = jit->builder->CreateGlobalString(str);
++#else
+ 	auto ptr = jit->builder->CreateGlobalStringPtr(str);
++#endif
+ 	return RValue<Pointer<Byte>>(V(ptr));
+ }
+ 
+@@ -4011,7 +4036,11 @@ void promoteFunctionToCoroutine()
+ 
+ 	// Build the suspend block
+ 	jit->builder->SetInsertPoint(jit->coroutine.suspendBlock);
+-	jit->builder->CreateCall(coro_end, { jit->coroutine.handle, llvm::ConstantInt::get(i1Ty, 0) });
++	jit->builder->CreateCall(coro_end, { jit->coroutine.handle, llvm::ConstantInt::get(i1Ty, 0)
++#if LLVM_VERSION_MAJOR >= 21
++	                                  , llvm::ConstantTokenNone::get(*jit->context)
++#endif
++	                                });
+ 	jit->builder->CreateRet(jit->coroutine.handle);
+ 
+ 	// Build the end block
+diff --git a/src/Vulkan/CMakeLists.txt b/src/Vulkan/CMakeLists.txt
+index bd05b0f..5d5b166 100644
+--- a/src/Vulkan/CMakeLists.txt
++++ b/src/Vulkan/CMakeLists.txt
+@@ -131,6 +131,12 @@ if(SWIFTSHADER_ENABLE_VULKAN_DEBUGGER)
+     )
+ endif()
+ 
++if(ANDROID)
++    list(APPEND VULKAN_SRC_FILES VkDeviceMemoryExternalAndroid.cpp)
++    # Android HAL structs intentionally leave reserved fields zero-initialized.
++    set_source_files_properties(VkGetProcAddress.cpp PROPERTIES COMPILE_OPTIONS "-Wno-missing-field-initializers")
++endif()
++
+ set(VULKAN_COMPILE_OPTIONS "")
+ if(FUCHSIA)
+     # At the moment, the Fuchsia build uses unofficial VK_STRUCTURE_TYPE_XX
+@@ -211,6 +217,9 @@ set_shared_library_export_map(vk_swiftshader ${CMAKE_CURRENT_SOURCE_DIR})
+ # debugging. ${VULKAN_API_LIBRARY_NAME} is the name of this drop-in API library.
+ if(WIN32)
+     set(VULKAN_API_LIBRARY_NAME "vulkan-1.dll")
++elseif(ANDROID)
++    set_target_properties(vk_swiftshader PROPERTIES PREFIX "" OUTPUT_NAME "vulkan.pastel")
++    set(VULKAN_API_LIBRARY_NAME "vulkan.pastel.so")
+ elseif(LINUX)
+     set(VULKAN_API_LIBRARY_NAME "libvulkan.so.1")
+ elseif(APPLE)

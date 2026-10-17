@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "repository": "https://packages.termux.dev/apt/termux-main/",
+  "packages": {
+    "libllvm": {
+      "Version": "21.1.8-3",
+      "Filename": "pool/main/libl/libllvm/libllvm_21.1.8-3_aarch64.deb",
+      "SHA256": "5056a73f2645fc9c0759e6f94a1bd6edcf36305acaef58dc685211ced9cc2a02",
+      "Size": "30733892"
+    },
+    "swiftshader": {
+      "Version": "2025.06.25-2",
+      "Filename": "pool/main/s/swiftshader/swiftshader_2025.06.25-2_aarch64.deb",
+      "SHA256": "97ee09ca869b2c8ddb5b32ca2bd08513ebf5d2d72956cbe9fcbd78f36494f24a",
+      "Size": "5091100"
+    },
+    "libc++": {
+      "Version": "30",
+      "Filename": "pool/main/libc/libc++/libc++_30_aarch64.deb",
+      "SHA256": "53d0b84a7ba7459024257cb94d5b136fe13ef858567f65a8064b35950799f2ca",
+      "Size": "341604"
+    },
+    "libandroid-shmem": {
+      "Version": "0.7",
+      "Filename": "pool/main/liba/libandroid-shmem/libandroid-shmem_0.7_aarch64.deb",
+      "SHA256": "0da3a24d558b93c92bcf8d611e0826a99ff96e396b148e6cdf33b47c47c57ff6",
+      "Size": "7216"
+    },
+    "libffi": {
+      "Version": "3.8.0",
+      "Filename": "pool/main/libf/libffi/libffi_3.8.0_aarch64.deb",
+      "SHA256": "4f255badf74cd31f6a2801c17fa1444199c84c834b517b7c843e2fe9ebe91d77",
+      "Size": "37592"
+    },
+    "libxml2": {
+      "Version": "2.15.4-1",
+      "Filename": "pool/main/libx/libxml2/libxml2_2.15.4-1_aarch64.deb",
+      "SHA256": "d315861bbcf716cfb088f53cddab9fb6a96430cc66769f79774cc69c2f53bcff",
+      "Size": "442652"
+    },
+    "libiconv": {
+      "Version": "1.19",
+      "Filename": "pool/main/libi/libiconv/libiconv_1.19_aarch64.deb",
+      "SHA256": "fe9481b1dc101c6c3552943f25435109fd522aecc615ae49594f9fbee863bb37",
+      "Size": "562724"
+    },
+    "libandroid-glob": {
+      "Version": "0.6-3",
+      "Filename": "pool/main/liba/libandroid-glob/libandroid-glob_0.6-3_aarch64.deb",
+      "SHA256": "2276ae8adedf0db76c2f4ffc94cc4cceb2f4f5d78e021b54e2e046d1233e7826",
+      "Size": "7032"
+    },
+    "ncurses": {
+      "Version": "6.6.20260307+really6.5.20250830",
+      "Filename": "pool/main/n/ncurses/ncurses_6.6.20260307+really6.5.20250830_aarch64.deb",
+      "SHA256": "f44bbfdc3d42ec0217bffa978309390e59cea5a48a9a83226d4a496c42ad0b99",
+      "Size": "557792"
+    },
+    "zlib": {
+      "Version": "1.3.2",
+      "Filename": "pool/main/z/zlib/zlib_1.3.2_aarch64.deb",
+      "SHA256": "75e7d0af17fcc3b40004309fdc00a1ddb9ae08346dce5e269902c34ac3966ac9",
+      "Size": "62840"
+    },
+    "zstd": {
+      "Version": "1.5.7-1",
+      "Filename": "pool/main/z/zstd/zstd_1.5.7-1_aarch64.deb",
+      "SHA256": "e1b4a5113648da8de189620ba1fce74c48b2d0833d9043391b9a1c91fb606fd3",
+      "Size": "360488"
+    },
+    "liblzma": {
+      "Version": "5.8.4",
+      "Filename": "pool/main/libl/liblzma/liblzma_5.8.4_aarch64.deb",
+      "SHA256": "44e95e6e60dddb3705e60a344a4f009a1085a210797342b721eaff41b44033c0",
+      "Size": "194796"
+    }
+  },
+  "recipe_repository": "https://github.com/termux/termux-packages",
+  "recipe_revision": "4e6a496b172798099f963aa81d2d5b55fd6c395c",
+  "supplemental_licenses": {
+    "libc++/LICENSE": "539dd7aed86e8a4f12cbdd0e6c50c189c7d74847e4fecc64ce2c6ee3a01da38b",
+    "libiconv/COPYING": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "libiconv/COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+    "zstd/LICENSE": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8"
+  },
+  "libiconv_source": {
+    "url": "https://mirrors.kernel.org/gnu/libiconv/libiconv-1.19.tar.gz",
+    "sha256": "88dd96a8c0464eca144fc791ae60cd31cd8ee78321e67397e25fc095c4a19aa6"
+  }
+}
