@@ -127,5 +127,11 @@
     "name": "lineage-swiftshader-android36-arm64-20261017.tar.zst",
     "sha256": "2343c78d68e493bed8417eb2fb71c5cf66e15674fb90598fe9863ba52c26afdc",
     "bytes": 46741230
+  },
+  "classification": "synthetic_only",
+  "repository_check": {
+    "command": "make check",
+    "tests": 25,
+    "result": "pass"
   }
 }

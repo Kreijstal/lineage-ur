@@ -11,6 +11,7 @@ from import_termux import verify_inputs
 
 
 def verify_source(source):
+    subprocess.run(["git", "-C", str(source), "diff", "--check"], check=True)
     revision = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
     if revision != "cddb5c91b23ff70a1f607ea31610aa0d7f4b5ad5":
         raise ValueError("SwiftShader source revision differs from the recipe pin")

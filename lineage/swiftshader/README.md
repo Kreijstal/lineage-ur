@@ -5,6 +5,9 @@ HAL, reusing **Termux's prebuilt ARM64/Bionic LLVM 21.1.8** and its dependency
 closure. It supplies a hash-pinned package and an opt-in Soong adapter. LLVM is
 not rebuilt. The initial host LLVM 22 experiment is retained separately below.
 
+Download the [experimental ARM64 package](https://github.com/Kreijstal/lineage-ur/releases/tag/swiftshader-android36-arm64-20261017)
+and verify its `SHA256SUMS` before integration.
+
 The upstream revision is `cddb5c91b23ff70a1f607ea31610aa0d7f4b5ad5` (2026-10-14).
 The package targets ARM64, Android API 36 and the vendor partition. Its C++ code
 uses the NDK `__ndk1` ABI expected by Termux LLVM; its private C++ runtime remains

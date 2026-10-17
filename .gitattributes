@@ -1,0 +1,2 @@
+# Unified diff context includes a leading space before upstream tabs/blank lines.
+lineage/swiftshader/patches/*.patch -whitespace

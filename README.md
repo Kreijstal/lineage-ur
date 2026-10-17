@@ -38,6 +38,7 @@ checks and an overlay that preserves each component's license visibility.
 Android Vulkan HAL using Termux's prebuilt LLVM 21, with checksum-guarded Soong
 selection, vendor APEX checks and a Vulkan compute runtime test. Full ROM boot
 and hardware/display validation remain outstanding.
+Download the [experimental SwiftShader package](https://github.com/Kreijstal/lineage-ur/releases/tag/swiftshader-android36-arm64-20261017).
 
 ## Repository layout
 
