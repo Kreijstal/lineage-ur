@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "apps": [
+    {
+      "module": "DeskClock",
+      "path": "packages/apps/DeskClock",
+      "repository": "packages/apps/DeskClock",
+      "revision": "12d878eb57f15e1832048384cbe9931a7b8a0fbb"
+    },
+    {
+      "module": "Etar",
+      "path": "packages/apps/Etar/app",
+      "repository": "packages/apps/Etar",
+      "revision": "3cda65da396e64c3ac936512816ad4c35c9a4958"
+    },
+    {
+      "module": "ExactCalculator",
+      "path": "packages/apps/ExactCalculator",
+      "repository": "packages/apps/ExactCalculator",
+      "revision": "153847a298160cbf10c50bdbcdfbc956ae9400c9"
+    },
+    {
+      "module": "Recorder",
+      "path": "packages/apps/Recorder/app",
+      "repository": "packages/apps/Recorder",
+      "revision": "8473be8008466b52434887c549ec462fabdb865e"
+    },
+    {
+      "module": "Jelly",
+      "path": "packages/apps/Jelly/app",
+      "repository": "packages/apps/Jelly",
+      "revision": "def4643279255b0b9eabd526898d23af248a9ad0"
+    },
+    {
+      "module": "Aperture",
+      "path": "packages/apps/Aperture/app",
+      "repository": "packages/apps/Aperture",
+      "revision": "1120b49b7f24e7ef04213db14a6f2e5e52b4f11c"
+    },
+    {
+      "module": "ApertureLensLauncher",
+      "path": "packages/apps/Aperture/lens_launcher",
+      "repository": "packages/apps/Aperture",
+      "revision": "1120b49b7f24e7ef04213db14a6f2e5e52b4f11c"
+    },
+    {
+      "module": "Twelve",
+      "path": "packages/apps/Twelve/app",
+      "repository": "packages/apps/Twelve",
+      "revision": "c5769bd97d54fbe9b67056d0fdb05fdfed733902"
+    },
+    {
+      "module": "Glimpse",
+      "path": "packages/apps/Glimpse/app",
+      "repository": "packages/apps/Glimpse",
+      "revision": "8de08089dcd87a753c2c23e5861563238f681e99"
+    },
+    {
+      "module": "Camelot",
+      "path": "packages/apps/Camelot/app",
+      "repository": "packages/apps/Camelot",
+      "revision": "e11e39767ac3cae5a504683575ca25109353bed6"
+    },
+    {
+      "module": "PhotoTable",
+      "path": "packages/screensavers/PhotoTable",
+      "repository": "packages/screensavers/PhotoTable",
+      "revision": "45a995b5cf63ea8bd4b46f53a4e252c48e8cbaac"
+    },
+    {
+      "module": "messaging",
+      "path": "packages/apps/Messaging",
+      "repository": "packages/apps/Messaging",
+      "revision": "e8d54f169338b16d545d175868645ead8c83e979"
+    }
+  ]
+}

@@ -22,7 +22,8 @@ def main():
     parser.add_argument("--termux-libraries", type=Path, help="also check independent Termux target library adapters")
     parser.add_argument("--context-variables", type=Path, help="print target context instead of running tests")
     parser.add_argument("--context-out-dir", default="out")
-    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestPackagedSharedTarget.*|TestTargetPackage.*|TestPrebuilt.*)$", help="focused Go test name pattern")
+    parser.add_argument("--context-source-dir", help="reference checkout path; prints the checkout-independent app context")
+    parser.add_argument("--run", default="^(TestSystemBuildTool.*|TestPackagedHostLibrary.*|TestPackagedTarget.*|TestPackagedSharedTarget.*|TestTargetPackage.*|TestPrebuilt.*|TestAndroidPackagedApp.*)$", help="focused Go test name pattern")
     args = parser.parse_args()
     source = args.source_root.resolve()
     soong = args.soong_root.resolve()
@@ -37,6 +38,7 @@ def main():
         "cc": ["packaged_target.go", "packaged_binary.go", "packaged_target_test.go",
                "packaged_target_overlay_test.go", "packaged_binary_test.go"],
         "apex": ["packaged_target_test.go", "packaged_binary_test.go"],
+        "java": ["packaged_app.go", "packaged_app_test.go"],
     }.items():
         blueprint = (soong / package / "Android.bp").read_text()
         for filename in files:
@@ -85,9 +87,11 @@ def main():
         env.pop("LINEAGE_UR_TERMUX_LIBRARIES", None)
     if args.context_variables:
         subprocess.run([str(go), "run", "./cmd/target_package_context", "--variables", str(args.context_variables.resolve()),
-                        "--out-dir", args.context_out_dir], cwd=soong, env=env, check=True)
+                        "--out-dir", args.context_out_dir,
+                        *(["--source-dir", args.context_source_dir] if args.context_source_dir else [])],
+                       cwd=soong, env=env, check=True)
         return
-    test_packages = ["./android", "./genrule", "./cc"]
+    test_packages = ["./android", "./genrule", "./cc", "./java"]
     if args.target_overlay or args.swiftshader_package:
         test_packages.append("./apex")
     subprocess.run([str(go), "test", "-p", "2", *test_packages,

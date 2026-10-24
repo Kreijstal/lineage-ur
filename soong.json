@@ -9,8 +9,8 @@
     "repository": "https://github.com/Kreijstal/android_build_soong",
     "branch": "lineage-ur-23.2",
     "base_revision": "9aa045a2aef10b8089e32e847fed26d9aa3d61be",
-    "status": "experimental_host_and_target_reuse",
-    "revision": "0f81e78999ae0fa8487788ad8f4de6c70384b79f"
+    "status": "experimental_host_target_and_app_reuse",
+    "revision": "190c652cf55d7db3c208c1f19e92769098b42465"
   },
   "integration_manifest": "manifests/lineage-ur-soong.xml",
   "features": {
@@ -19,6 +19,7 @@
     "packaged_host_library_selection": "experimental",
     "system_lz4_selection": "experimental_functionally_checked",
     "packaged_target_object_selection": "experimental_functionally_checked",
-    "packaged_target_binary_selection": "experimental_functionally_checked"
+    "packaged_target_binary_selection": "experimental_functionally_checked",
+    "packaged_app_selection": "experimental_byte_identical_r8q_apks"
   }
 }

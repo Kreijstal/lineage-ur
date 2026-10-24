@@ -45,6 +45,15 @@ selection, vendor APEX checks and a Vulkan compute runtime test. Full ROM boot
 and hardware/display validation remain outstanding.
 Download the [experimental SwiftShader package](https://github.com/Kreijstal/lineage-ur/releases/tag/swiftshader-android36-arm64-20261017).
 
+[Packaged leaf apps](lineage/apps/README.md) let a build reuse 12 LineageOS apps
+built by the r8q reference build: Clock, Calendar, Calculator, Recorder, the
+browser, camera, music and gallery apps, and Messaging. Each app falls back to
+its source build when any recorded input or configuration differs. In a separate
+checkout the packaged builds produced byte-identical signed APKs. They remove
+about 2.4 hours of build-step time per full build; the wall-clock saving hasn't
+been measured.
+Download the [r8q app packages](https://github.com/Kreijstal/lineage-ur/releases/tag/apps-r8q-20261024).
+
 ## Repository layout
 
 | Path | Purpose |
