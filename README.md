@@ -56,6 +56,26 @@ Download the [r8q app packages](https://github.com/Kreijstal/lineage-ur/releases
 
 ## Repository layout
 
+Pocket's Android 9 guest now has a separate image recipe under
+`lineage/pocket-images/`. It produces a deterministic system/vendor ZIP, a file
+input lock and an APK-pinned download catalog. Repackaging its locked file inputs
+must reproduce the archive byte for byte. The initial recipe bootstraps from the
+SHA-256-pinned Pocket 0.75 APK; it does not rebuild the upstream Android platform
+from source. Guest data and signing private keys are excluded.
+
+```sh
+python3 lineage/pocket-images/package.py --apk /path/to/aosp-pocket-manager-0.75.apk \
+  --output artifacts/pocket-api28-0.75.0 \
+  --base-url https://github.com/Kreijstal/lineage-ur/releases/download/pocket-api28-0.75.0
+make check-pocket-images
+```
+
+The recipe pins zlib for archive compression. `--rootfs` together with the
+exported `--inputs-lock` reconstructs the same ZIP from materialized files.
+Pocket downloads this image on first use, verifies its archive and file hashes,
+and retains the installed image for offline use. These API-28 packages are
+separate from the Android-16/r8q component packages.
+
 | Path | Purpose |
 | --- | --- |
 | `lineage/` | Component recipes and patches, one directory per component. |

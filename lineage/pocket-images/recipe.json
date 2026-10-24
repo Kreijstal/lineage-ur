@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "profile": "api28-direct",
+  "sdk": 28,
+  "abi": "arm64-v8a",
+  "runtime": 1,
+  "version": "0.75.0",
+  "archive": {
+    "format": "zip-deflate-1",
+    "zlib_version": "1.3.2",
+    "timestamp": "1980-01-01T00:00:00Z"
+  },
+  "bootstrap": {
+    "kind": "pocket-apk",
+    "version": "0.75",
+    "sha256": "432b531d66339f174276e20d23b86b2c3ccc90788e5dcbca23f1a8ff2571013c"
+  }
+}

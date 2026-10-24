@@ -55,3 +55,8 @@ check:
 	$(PYTHON) -m unittest discover -s tools -p 'test_*.py' -v
 	git diff --check
 	git diff --cached --check
+
+.PHONY: check-pocket-images
+check-pocket-images:
+	$(PYTHON) -m py_compile lineage/pocket-images/package.py
+	$(PYTHON) -m unittest discover -s tools -p test_pocket_images.py -v
