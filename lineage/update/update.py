@@ -71,20 +71,27 @@ def git(repo, *args):
 
 # Upstream comparison ---------------------------------------------------------
 
-def tracked_projects(manifest_path):
-    """Synced projects of a `repo manifest -r` file: (path, url, tracked ref, pinned revision)."""
+def tracked_projects(manifest_path, ignore_groups=("notdefault", "infra")):
+    """Projects of a `repo manifest -r` file that follow a branch or tag: (path, url, ref, pinned revision).
+
+    A project without `upstream` is pinned to a commit by LineageOS's manifest, so it only moves
+    through the manifest repository (`android`), which is itself compared. Infra repositories such
+    as lineage/hudson are not built.
+    """
     root = ET.parse(manifest_path).getroot()
     remotes = {r.get("name"): r for r in root.iter("remote")}
     default = root.find("default")
     projects = []
     for project in root.iter("project"):
-        if "notdefault" in (project.get("groups") or "").split(","):
+        if set((project.get("groups") or "").split(",")) & set(ignore_groups):
             continue
-        remote = remotes[project.get("remote") or default.get("remote")]
-        fetch = remote.get("fetch")
+        ref = project.get("upstream") or project.get("dest-branch")
+        if not ref:
+            continue
+        fetch = remotes[project.get("remote") or default.get("remote")].get("fetch")
         base = "https://github.com" if fetch == ".." else fetch.rstrip("/")
-        ref = (project.get("upstream") or project.get("dest-branch") or remote.get("revision")
-               or default.get("revision"))
+        if not ref.startswith("refs/"):
+            ref = "refs/heads/" + ref
         projects.append((project.get("path") or project.get("name"), f"{base}/{project.get('name')}",
                          ref, project.get("revision")))
     return projects
@@ -389,7 +396,8 @@ class Run:
         latest.write_text(json.dumps(manifest, indent=2) + "\n")
         run(["git", "-C", str(tree), "add", "-A", "soong.json", "lineage", "manifests"])
         message = (f"Update r8q packages to LineageOS {config['branch']} as of {date}\n\n"
-                   f"Release {tag}; Soong fork {soong['revision']}.\n")
+                   f"Release {tag}; Soong fork {soong['revision']}.\n\n"
+                   "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n")
         run(["git", "-C", str(tree), "commit", "-q", "-m", message])
         commit = git(tree, "rev-parse", "HEAD")
         run(["git", "-C", str(tree), "push", "origin", "HEAD:main"])

@@ -20,20 +20,22 @@ def git(repo, *args):
 
 
 class UpdateTest(unittest.TestCase):
-    def test_tracked_projects_resolve_refs_and_skip_notdefault(self):
+    def test_tracked_projects_follow_branches_and_skip_pinned_and_infra(self):
         with tempfile.TemporaryDirectory() as temporary:
             manifest = Path(temporary) / "pinned.xml"
             manifest.write_text(
                 '<manifest><remote name="aosp" fetch="https://android.googlesource.com" revision="refs/tags/t1"/>'
                 '<remote name="github" fetch=".."/><default remote="github" revision="refs/heads/lineage-23.2"/>'
                 '<project name="LineageOS/a" path="a" revision="1" upstream="refs/heads/lineage-23.2"/>'
-                '<project name="platform/b" path="b" remote="aosp" revision="2"/>'
-                '<project name="LineageOS/c" revision="3"/>'
+                '<project name="platform/b" path="b" remote="aosp" revision="2" upstream="refs/tags/t1"/>'
+                '<project name="LineageOS/c" revision="3" upstream="main"/>'
+                '<project name="platform/pinned" path="pinned" remote="aosp" revision="5"/>'
+                '<project name="LineageOS/hudson" path="hudson" revision="6" upstream="main" groups="infra"/>'
                 '<project name="LineageOS/wiki" path="wiki" revision="4" groups="notdefault"/></manifest>')
             self.assertEqual(module().tracked_projects(manifest), [
                 ("a", "https://github.com/LineageOS/a", "refs/heads/lineage-23.2", "1"),
                 ("b", "https://android.googlesource.com/platform/b", "refs/tags/t1", "2"),
-                ("LineageOS/c", "https://github.com/LineageOS/c", "refs/heads/lineage-23.2", "3")])
+                ("LineageOS/c", "https://github.com/LineageOS/c", "refs/heads/main", "3")])
 
     def test_remote_head_dereferences_annotated_tags(self):
         with tempfile.TemporaryDirectory() as temporary:
