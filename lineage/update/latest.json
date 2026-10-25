@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tag": "lineage-r8q-20261025",
+  "product": "lineage_r8q",
+  "lunch": "lineage_r8q-bp4a-userdebug",
+  "soong_fork": {
+    "repository": "https://github.com/Kreijstal/android_build_soong",
+    "revision": "190c652cf55d7db3c208c1f19e92769098b42465"
+  },
+  "context": {
+    "apps": "eb4da50304d528abed550ea7436530dab0a22b11f57b9cb9082ca24c7f99dcf6",
+    "target": "578f1dafde6ac8149e6b0bb446eeec1ef4403da7943c04dfdfe18f58c061427f"
+  },
+  "pinned_manifest_sha256": "f201a500fee95e9fe989e5d429a9ee0f08c718111d595c5d29eb520b31ebc996",
+  "apps_identical": {
+    "DeskClock": true,
+    "Etar": true,
+    "ExactCalculator": true,
+    "Recorder": true,
+    "Jelly": true,
+    "Aperture": true,
+    "ApertureLensLauncher": true,
+    "Twelve": true,
+    "Glimpse": true,
+    "Camelot": true,
+    "PhotoTable": true,
+    "messaging": true
+  },
+  "archives": {
+    "apps-r8q": {
+      "name": "lineage-r8q-apps-20261025.tar.zst",
+      "sha256": "66a7aecd3c52ea6753287cf743af51fafe1a0cef8e5e90af01fa1c7aa438160e",
+      "bytes": 87416768
+    },
+    "target-libraries-r8q-v2": {
+      "name": "lineage-r8q-core-libraries-20261025.tar.zst",
+      "sha256": "8452c7bccb5a0eacf4bd0e4fbbcb5c43b194df2dba58010c3ae8629863ee1f2a",
+      "bytes": 68109805
+    },
+    "target-libraries-r8q-graphics-tracing": {
+      "name": "lineage-r8q-graphics-tracing-20261025.tar.zst",
+      "sha256": "3a4181f972830f448a60a1bdafac3fe6160b53f55ccde53719700e4f0ccccd47",
+      "bytes": 1597152135
+    }
+  }
+}
