@@ -1,0 +1,20 @@
+diff --git a/drivers/staging/qcacld-3.0/Kbuild b/drivers/staging/qcacld-3.0/Kbuild
+index 7f3578784..aa5ddd19c 100644
+--- a/drivers/staging/qcacld-3.0/Kbuild
++++ b/drivers/staging/qcacld-3.0/Kbuild
+@@ -2279 +2279,9 @@
++# Kbuild creates a source symlink in the output directory for O= builds.
++# Use it for this driver's many include paths: repeating a long absolute
++# srctree in both the compiler command and fixdep can exceed MAX_ARG_STRLEN.
++ifeq ($(KERNEL_BUILD), y)
++ifneq ($(KBUILD_SRC),)
++INCS := $(patsubst $(srctree)/%,source/%,$(INCS))
++endif
++endif
+ ccflags-y += $(INCS)
+@@ -3321,3 +3329,5 @@
++ifneq ($(shell command -v secgetspf 2>/dev/null),)
+ ifeq ($(shell secgetspf SEC_PRODUCT_FEATURE_WLAN_SUPPORT_MIMO), TRUE)
+ EXTRA_CFLAGS += -DSEC_CONFIG_SUPPORT_MIMO
++endif
+ endif

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "manifest_url": "https://github.com/LineageOS/android.git",
+  "branch": "lineage-23.2",
+  "device": "r8q",
+  "product": "lineage_r8q",
+  "lunch": "lineage_r8q-bp4a-userdebug",
+  "build_target": "bacon",
+  "local_manifest": "r8q.xml",
+  "patches": {
+    "kernel/samsung/sm8250": "patches/kernel-sm8250-qcacld-shorten-include-paths.patch"
+  },
+  "baseline_manifest": "manifests/reference-r8q-pinned.xml",
+  "repo_tool": "../s20fe-hardware-lab/artifacts/tools/repo",
+  "ccache_dir": "../s20fe-hardware-lab/artifacts/lineage/ccache",
+  "workspace": "artifacts/update/source",
+  "runs": "artifacts/update/runs",
+  "soong": {
+    "fork": "../android_build_soong",
+    "branch": "lineage-ur-23.2",
+    "upstream_url": "https://github.com/LineageOS/android_build_soong.git",
+    "upstream_branch": "lineage-23.2"
+  },
+  "target_libraries": {
+    "target-libraries-r8q-v2": ["libbz", "libz", "libexpat", "libzstd", "libpng", "libjpeg"],
+    "target-libraries-r8q-graphics-tracing": ["libskia", "libskia_renderengine", "libperfetto_c",
+                                              "libperfetto_client_experimental"]
+  },
+  "lfs_pointers_allowed": [
+    "external/rust/android-crates-io/crates/android_bp/src/test_db.tar.xz"
+  ],
+  "github_repository": "Kreijstal/lineage-ur",
+  "sync_jobs": 4,
+  "build_jobs": 10,
+  "min_free_gib": 150,
+  "min_free_gib_incremental": 40
+}

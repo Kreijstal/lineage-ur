@@ -41,6 +41,8 @@ check:
 	$(PYTHON) -m py_compile lineage/swiftshader/import_termux.py lineage/termux-libraries/prepare.py lineage/termux-libraries/check.py
 	$(PYTHON) -m py_compile lineage/apps/package.py lineage/apps/apply.py
 	$(PYTHON) -m json.tool lineage/apps/recipes.json > /dev/null
+	$(PYTHON) -m py_compile lineage/update/update.py
+	$(PYTHON) -m json.tool lineage/update/config.json > /dev/null
 	$(PYTHON) -m json.tool lineage/termux-libraries/recipes.json > /dev/null
 	$(PYTHON) -m json.tool lineage/termux-libraries/termux-aarch64.lock.json > /dev/null
 	$(PYTHON) -m json.tool repo.json > /dev/null
